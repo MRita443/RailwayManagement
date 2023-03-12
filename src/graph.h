@@ -31,9 +31,9 @@ public:
 
     bool addVertex(const int &id);
 
-    [[nodiscard]] bool addEdge(const int &source, const int &dest, double w) const;
+    [[nodiscard]] bool addEdge(const int &source, const int &dest, double c) const;
 
-    [[nodiscard]] bool addBidirectionalEdge(const int &source, const int &dest, double w) const;
+    [[nodiscard]] bool addBidirectionalEdge(const int &source, const int &dest, double c) const;
 
     [[nodiscard]] unsigned int getNumVertex() const;
 

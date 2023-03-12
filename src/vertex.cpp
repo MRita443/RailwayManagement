@@ -6,9 +6,12 @@
 
 Vertex::Vertex(int id): id(id) {}
 
-/*
- * Auxiliary function to add an outgoing edge to a vertex (this),
- * with a given destination vertex (d) and edge weight (w).
+/**
+ * Adds a new outgoing edge to the Vertex, with a given destination and capacity
+ * Time Complexity: O(1)
+ * @param d - Pointer to the destination Vertex
+ * @param w - Edge capacity
+ * @return Pointer to the new Edge created
  */
 Edge * Vertex::addEdge(Vertex *d, double w) {
     auto newEdge = new Edge(this, d, w);
@@ -17,10 +20,11 @@ Edge * Vertex::addEdge(Vertex *d, double w) {
     return newEdge;
 }
 
-/*
- * Auxiliary function to remove an outgoing edge (with a given destination (d))
- * from a vertex (this).
- * Returns true if successful, and false if such edge does not exist.
+/**
+ * Removes an outgoing edge, with a given destination, from the Vertex
+ * Time Complexity: O(indegree(v) * outdegree(v))
+ * @param destID - Id of the destination Vertex of the Edge to be removed
+ * @return True if successful, and false if no such Edge exists
  */
 bool Vertex::removeEdge(int destID) {
     bool removedEdge = false;
