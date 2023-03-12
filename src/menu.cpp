@@ -27,8 +27,8 @@ void Menu::initializeMenu() {
  * TODO: Time Complexity
  */
 void Menu::extractFileInfo() {
-    extractStationsFile();
-    extractNetworkFile();
+    //extractStationsFile();
+    //extractNetworkFile();
 }
 
 /**
@@ -101,15 +101,15 @@ void Menu::mainMenu() {
         }
         switch (commandIn) {
             case '1': {
-                commandIn = serviceMetricsMenu();
+                //commandIn = serviceMetricsMenu();
                 break;
             }
             case '2': {
-                commandIn = costOptMenu();
+                //commandIn = costOptMenu();
                 break;
             }
             case '3': {
-                commandIn = sensitivityMenu();
+                //commandIn = sensitivityMenu();
                 break;
             }
             case 'q': {
