@@ -4,9 +4,9 @@
 
 #include "edge.h"
 
-Edge::Edge(Vertex *orig, Vertex *dest, double w): orig(orig), dest(dest), capacity(w) {}
+Edge::Edge(Vertex *orig, Vertex *dest, double w) : orig(orig), dest(dest), capacity(w) {}
 
-Vertex * Edge::getDest() const {
+Vertex *Edge::getDest() const {
     return this->dest;
 }
 
@@ -14,7 +14,7 @@ double Edge::getCapacity() const {
     return this->capacity;
 }
 
-Vertex * Edge::getOrig() const {
+Vertex *Edge::getOrig() const {
     return this->orig;
 }
 

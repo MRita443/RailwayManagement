@@ -4,7 +4,7 @@
 
 #include "vertex.h"
 
-Vertex::Vertex(int id): id(id) {}
+Vertex::Vertex(int id) : id(id) {}
 
 /**
  * Adds a new outgoing edge to the Vertex, with a given destination and capacity
@@ -13,7 +13,7 @@ Vertex::Vertex(int id): id(id) {}
  * @param w - Edge capacity
  * @return Pointer to the new Edge created
  */
-Edge * Vertex::addEdge(Vertex *d, double w) {
+Edge *Vertex::addEdge(Vertex *d, double w) {
     auto newEdge = new Edge(this, d, w);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
@@ -39,22 +39,20 @@ bool Vertex::removeEdge(int destID) {
             while (it2 != dest->incoming.end()) {
                 if ((*it2)->getOrig()->getId() == id) {
                     it2 = dest->incoming.erase(it2);
-                }
-                else {
+                } else {
                     it2++;
                 }
             }
             delete edge;
             removedEdge = true; // allows for multiple edges to connect the same pair of vertices (multigraph)
-        }
-        else {
+        } else {
             it++;
         }
     }
     return removedEdge;
 }
 
-bool Vertex::operator<(Vertex & vertex) const {
+bool Vertex::operator<(Vertex &vertex) const {
     return this->dist < vertex.dist;
 }
 
@@ -62,7 +60,7 @@ int Vertex::getId() const {
     return this->id;
 }
 
-std::vector<Edge*> Vertex::getAdj() const {
+std::vector<Edge *> Vertex::getAdj() const {
     return this->adj;
 }
 

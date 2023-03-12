@@ -15,8 +15,11 @@ private:
     const std::string line;
 public:
     [[nodiscard]] const std::string &getName() const;
+
     [[nodiscard]] const std::string &getDistrict() const;
+
     [[nodiscard]] const std::string &getMunicipality() const;
+
     [[nodiscard]] const std::string &getLine() const;
 };
 
