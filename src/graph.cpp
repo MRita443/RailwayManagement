@@ -215,7 +215,6 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value, Gr
     }
 }
 
-
 /**
 * Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
  * Time Complexity: O(|V+E|)
@@ -239,7 +238,6 @@ std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const
             }
         }
     }
-
     return eol_stations;
 }
 
@@ -369,5 +367,3 @@ bool Graph::minCostPath(const std::string &source, const std::string &target) {
 
     return false;
 }*/
-
-
