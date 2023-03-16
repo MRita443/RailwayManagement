@@ -211,3 +211,17 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
         }
     }
 }
+
+void Graph::deactivateEdges(int numEdges) {
+    int id = 0;
+    int choice = 0;
+    int currentEdges = 0;
+    while(currentEdges < numEdges){
+        id = rand() % vertexSet.size();
+        choice = rand() % vertexSet[id]->getAdj().size();
+        if(vertexSet[id]->getAdj()[choice]->isSelected()){
+           vertexSet[id]->getAdj()[choice]->setSelected(false);
+           currentEdges++;
+        }
+    }
+}

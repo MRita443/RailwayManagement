@@ -40,6 +40,8 @@ public:
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     void edmondsKarp(const int &source, const int &target);
+
+    void deactivateEdges(int i);
 };
 
 
