@@ -39,7 +39,7 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    int edmondsKarp(const int &source, const int &target);
+    unsigned int edmondsKarp(const int &source, const int &target);
 
     std::vector<Edge*> deactivateEdges(int i);
 
@@ -47,8 +47,8 @@ public:
 
     void activateEdges(std::vector<Edge*> Edges);
 
-    int maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target);
-    int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target);
+    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target);
+    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target);
 };
 
 

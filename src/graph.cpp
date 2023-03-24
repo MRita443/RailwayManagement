@@ -95,7 +95,7 @@ bool Graph::addBidirectionalEdge(const int &source, const int &dest, double c) c
  * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  */
-int Graph::edmondsKarp(const int &source, const int &target) {
+unsigned int Graph::edmondsKarp(const int &source, const int &target) {
     int maxFlow = 0;
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
@@ -252,16 +252,16 @@ void Graph::activateEdges(std::vector<Edge *> Edges) {
     }
 }
 
-int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
-    int maxFlowInterrupted = edmondsKarp(source, target);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
 }
 
-int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(selectedEdges);
-    int maxFlowInterrupted = edmondsKarp(source, target);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
 }
