@@ -95,7 +95,8 @@ bool Graph::addBidirectionalEdge(const int &source, const int &dest, double c) c
  * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  */
-void Graph::edmondsKarp(const int &source, const int &target) {
+int Graph::edmondsKarp(const int &source, const int &target) {
+    int maxFlow = 0;
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
@@ -105,6 +106,12 @@ void Graph::edmondsKarp(const int &source, const int &target) {
     while (path(source, target)) {
         augmentPath(source, target, findBottleneck(source, target));
     }
+
+    for(Edge* edge : vertexSet[target]->getIncoming()){
+        maxFlow += edge->getFlow();
+    }
+
+    return maxFlow;
 }
 
 /**
@@ -212,16 +219,42 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
     }
 }
 
-void Graph::deactivateEdges(int numEdges) {
+std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     int id = 0;
     int choice = 0;
     int currentEdges = 0;
+    std::vector<Edge*> deactivatedEdges = {};
     while(currentEdges < numEdges){
         id = rand() % vertexSet.size();
         choice = rand() % vertexSet[id]->getAdj().size();
         if(vertexSet[id]->getAdj()[choice]->isSelected()){
            vertexSet[id]->getAdj()[choice]->setSelected(false);
+           deactivatedEdges.push_back(vertexSet[id]->getAdj()[choice]);
            currentEdges++;
         }
     }
+    return deactivatedEdges;
 }
+
+std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> Edges) {
+    std::vector<Edge*> deactivatedEdges = {};
+    for(Edge* edge : Edges){
+        edge->setSelected(false);
+        deactivatedEdges.push_back(edge);
+    }
+    return deactivatedEdges;
+}
+
+void Graph::activateEdges(std::vector<Edge *> Edges) {
+    for(Edge* edge : Edges){
+        edge->setSelected(true);
+    }
+}
+
+int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
+    std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
+    int maxFlowInterrupted = edmondsKarp(source, target);
+    activateEdges(deactivatedEdges);
+    return maxFlowInterrupted;
+}
+
