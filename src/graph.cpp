@@ -219,6 +219,7 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
     }
 }
 
+//change to return void
 std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     int id = 0;
     int choice = 0;
@@ -253,6 +254,13 @@ void Graph::activateEdges(std::vector<Edge *> Edges) {
 
 int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
+    int maxFlowInterrupted = edmondsKarp(source, target);
+    activateEdges(deactivatedEdges);
+    return maxFlowInterrupted;
+}
+
+int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target) {
+    std::vector<Edge*> deactivatedEdges = deactivateEdges(selectedEdges);
     int maxFlowInterrupted = edmondsKarp(source, target);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
