@@ -19,19 +19,20 @@ public:
 
     [[nodiscard]] double getCapacity() const;
 
-    [[nodiscard]] bool isSelected() const;
+    [[nodiscard]] bool isSelected() const; //isOpen
 
     [[nodiscard]] Vertex *getOrig() const;
 
     [[nodiscard]] Edge *getReverse() const;
 
-    [[nodiscard]] double getFlow() const;
+    [[nodiscard]] unsigned int* getFlow() const;
 
     void setSelected(bool selected);
 
     void setReverse(Edge *reverse);
 
-    void setFlow(double flow);
+    void setFlow(unsigned int *flow);
+    void setFlowValue(unsigned int flow);
 
 protected:
     Vertex *dest; // destination vertex
@@ -44,7 +45,7 @@ protected:
     Vertex *orig;
     Edge *reverse = nullptr;
 
-    double flow; // for flow-related problems
+    unsigned int *flow; // for flow-related problems
 };
 
 

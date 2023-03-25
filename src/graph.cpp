@@ -131,7 +131,7 @@ bool Graph::path(const int &source, const int &target) {
 
 
         for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && e->getFlow() < e->getCapacity()) {
+            if (!e->getDest()->isVisited() && e->getFlow() < e->getCapacity() && e->isSelected()) {
                 q.push(e->getDest()->getId());
                 e->getDest()->setVisited(true);
                 e->getDest()->setPath(e);
@@ -140,7 +140,7 @@ bool Graph::path(const int &source, const int &target) {
         }
 
         for (Edge *e: currentVertex->getIncoming()) {
-            if (!e->getOrig()->isVisited() && e->getFlow() > 0) {
+            if (!e->getOrig()->isVisited() && e->getFlow() > 0 && e->isSelected()) {
                 q.push(e->getOrig()->getId());
                 e->getOrig()->setVisited(true);
                 e->getOrig()->setPath(e);
@@ -201,11 +201,11 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 
             if (currentPath->getDest() == currentVertex) //Regular Edge
             {
-                currentPath->setFlow(currentPath->getFlow() + value);
+                currentPath->setFlowValue(*(currentPath->getFlow()) + value);
                 currentVertex = currentVertex->getPath()->getOrig();
 
             } else { //Residual Edge (was traversed backwards)
-                currentPath->setFlow(currentPath->getFlow() - value);
+                currentPath->setFlowValue(*(currentPath->getFlow()) - value);
                 currentVertex = currentVertex->getPath()->getDest();
             }
         }
