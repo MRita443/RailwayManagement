@@ -25,13 +25,13 @@ public:
 
     [[nodiscard]] Edge *getReverse() const;
 
-    [[nodiscard]] double getFlow() const;
+    [[nodiscard]] double* getFlow() const;
 
     void setSelected(bool selected);
 
     void setReverse(Edge *reverse);
 
-    void setFlow(double flow);
+    void setFlow(double* flow);
 
 protected:
     Vertex *dest; // destination vertex
@@ -44,7 +44,7 @@ protected:
     Vertex *orig;
     Edge *reverse = nullptr;
 
-    double flow; // for flow-related problems
+    double* flow; // for flow-related problems
 };
 
 

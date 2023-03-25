@@ -40,34 +40,18 @@ unsigned int Graph::findVertexIdx(const int &id) const {
 }
 
 /**
- * Adds a vertex with a given id to the Graph
+ * Adds a vertex with a given id to the Graph, representing a given station
  * Time Complexity: O(|V|)
  * @param id - Id of the vertex to be added
  * @return True if successful, and false if a vertex with the given id already exists
  */
-bool Graph::addVertex(const int &id) {
+bool Graph::addVertex(const int &id, const Station& station) {
     if (findVertex(id) != nullptr)
         return false;
     vertexSet.push_back(new Vertex(id));
     return true;
 }
 
-/**
- * Adds a unidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c.
- * Time Complexity: O(|V|)
- * @param source - Id of the source Vertex
- * @param dest - Id of the destination Vertex
- * @param c - Capacity of the Edge to be added
- * @return True if successful, and false if the source or destination vertices do not exist
- */
-bool Graph::addEdge(const int &source, const int &dest, double c) const {
-    auto v1 = findVertex(source);
-    auto v2 = findVertex(dest);
-    if (v1 == nullptr || v2 == nullptr)
-        return false;
-    v1->addEdge(v2, c);
-    return true;
-}
 
 /**
  * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c.
@@ -82,10 +66,16 @@ bool Graph::addBidirectionalEdge(const int &source, const int &dest, double c) c
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
+
+    //Sets each Edge and its reverse to share flow attribute
+    double sharedFlow = 0;
+
     auto e1 = v1->addEdge(v2, c);
     auto e2 = v2->addEdge(v1, c);
     e1->setReverse(e2);
     e2->setReverse(e1);
+    e1->setFlow(&sharedFlow);
+    e2->setFlow(&sharedFlow);
     return true;
 }
 

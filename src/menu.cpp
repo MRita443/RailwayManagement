@@ -3,6 +3,7 @@
 //
 
 #include "menu.h"
+#include "station.h"
 
 using namespace std;
 
@@ -119,6 +120,58 @@ void Menu::mainMenu() {
             default: {
                 cout << "Please press one of listed keys." << endl;
                 break;
+            }
+        }
+    }
+}
+
+/**
+ * Extracts and stores the information of stations.csv
+ * Time Complexity: //TODO
+ */
+void Menu::extractStationsFile() {
+    {
+        ifstream stations(stationsFilePath);
+
+        string currentParam, currentLine;
+        string name, district, municipality, township, line;
+
+        int counter = 0;
+
+        getline(stations, currentParam); //Ignore first line with just descriptors
+
+        while (getline(stations, currentLine)) {
+            istringstream iss(currentLine);
+            while (getline(iss, currentParam, ',')) {
+                switch (counter++) {
+                    case 0: {
+                        name = currentParam;
+                        break;
+                    }
+                    case 1: {
+                        district = currentParam;
+                        break;
+                    }
+                    case 2: {
+                        municipality = currentParam;
+                        break;
+                    }
+                    case 3: {
+                        township = currentParam;
+                        break;
+                    }
+                    case 4: {
+                        line = currentParam;
+                        counter = 0;
+                        break;
+                    }
+                }
+                if (counter == 0) {
+                    Station newStation = dataRepository.addStationEntry(name, district, municipality, township, line);
+                    graph.addVertex(newStation);
+                    dataRepository.addAirportToCityEntry(city, country, newStation);
+
+                }
             }
         }
     }

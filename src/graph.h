@@ -13,10 +13,12 @@
 #include <algorithm>
 
 #include "vertex.h"
+#include "station.h"
 
 class Graph {
 protected:
     std::vector<Vertex *> vertexSet;    // vertex set
+    StationMap<int> stationToVertex; //Maps each station to the id of the vertex representing it
 
     [[nodiscard]] unsigned int findVertexIdx(const int &id) const;
 
@@ -30,8 +32,6 @@ public:
     [[nodiscard]] Vertex *findVertex(const int &id) const;
 
     bool addVertex(const int &id);
-
-    [[nodiscard]] bool addEdge(const int &source, const int &dest, double c) const;
 
     [[nodiscard]] bool addBidirectionalEdge(const int &source, const int &dest, double c) const;
 

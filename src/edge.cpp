@@ -26,7 +26,7 @@ bool Edge::isSelected() const {
     return this->selected;
 }
 
-double Edge::getFlow() const {
+double* Edge::getFlow() const {
     return flow;
 }
 
@@ -38,6 +38,6 @@ void Edge::setReverse(Edge *reverse) {
     this->reverse = reverse;
 }
 
-void Edge::setFlow(double flow) {
+void Edge::setFlow(double* flow) {
     this->flow = flow;
 }
