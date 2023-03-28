@@ -54,11 +54,12 @@ bool Graph::addVertex(const std::string &id) {
 
 
 /**
- * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c.
+ * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
  * Time Complexity: O(|V|)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param c - Capacity of the Edge to be added
+ * @param service - Service of the Edge to be added
  * @return True if successful, and false if the source or destination vertices do not exist
  */
 bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const {

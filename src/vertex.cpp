@@ -13,6 +13,7 @@ Vertex::Vertex(std::string id) : id(std::move(id)) {}
  * Time Complexity: O(1)
  * @param d - Pointer to the destination Vertex
  * @param w - Edge capacity
+ * @param service - Service of the Edge
  * @return Pointer to the new Edge created
  */
 Edge *Vertex::addEdge(Vertex *d, double w, Service service) {

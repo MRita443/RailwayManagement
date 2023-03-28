@@ -128,7 +128,7 @@ void Menu::mainMenu() {
 
 /**
  * Extracts and stores the information of stations.csv
- * Time Complexity: TODO
+ * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
  */
 bool Menu::extractStationsFile() {
     {
@@ -182,7 +182,7 @@ bool Menu::extractStationsFile() {
 
 /**
  * Extracts and stores the information of flights.csv
- * Time Complexity: TODO
+ * Time Complexity: 0(n*v), where n is the number of lines of network.csv and v is the number of nodes in graph
  */
 bool Menu::extractNetworkFile() {
 

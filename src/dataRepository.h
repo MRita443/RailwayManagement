@@ -18,6 +18,7 @@ private:
     stationTable stations;
     std::unordered_map<std::string, std::list<Station>> districtToStations;
     std::unordered_map<std::string, std::list<Station>> municipalityToStations;
+    std::unordered_map<std::string, std::list<Station>> townshipToStations;
 
 public:
     DataRepository();
@@ -29,6 +30,10 @@ public:
     const std::unordered_map<std::string, std::list<Station>> &getDistrictToStations() const;
 
     void setDistrictToStations(const std::unordered_map<std::string, std::list<Station>> &districtToStations);
+
+    const std::unordered_map<std::string, std::list<Station>> &getTownshipToStations() const;
+
+    void setTownshipToStations(const std::unordered_map<std::string, std::list<Station>> &townshipToStations);
 
     const std::unordered_map<std::string, std::list<Station>> &getMunicipalityToStations() const;
 
@@ -51,6 +56,12 @@ public:
     bool checkValidMunicipality(const std::string &municipality);
 
     std::list<Station> findStationsInMunicipality(const std::string &municipality);
+
+    std::list<Station> findStationsInTownship(const std::string &township);
+
+    void addStationToTownshipEntry(const std::string &township, const Station &station);
+
+    bool checkValidTownship(const std::string &township);
 };
 
 
