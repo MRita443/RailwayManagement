@@ -43,10 +43,11 @@ void DataRepository::setMunicipalityToStations(
  * @param line - Line of the station to be created
  * @return New Station object created
  */
-Station &
+Station
 DataRepository::addStationEntry(const std::string &name, const std::string &district, const std::string &municipality,
+                                const std::string &township,
                                 const std::string &line) {
-    Station newStation = Station(name, district, municipality, line);
+    Station newStation = Station(name, district, municipality, township, line);
     stations.insert(newStation);
     return newStation;
 }

@@ -18,11 +18,11 @@ class Edge;
 
 class Vertex {
 public:
-    explicit Vertex(int id);
+    explicit Vertex(std::string id);
 
     bool operator<(Vertex &vertex) const; // // required by MutablePriorityQueue
 
-    [[nodiscard]] int getId() const;
+    [[nodiscard]] std::string getId() const;
 
     [[nodiscard]] std::vector<Edge *> getAdj() const;
 
@@ -38,7 +38,7 @@ public:
 
     [[nodiscard]] std::vector<Edge *> getIncoming() const;
 
-    void setId(int info);
+    void setId(std::string info);
 
     void setVisited(bool visited);
 
@@ -50,14 +50,14 @@ public:
 
     void setPath(Edge *path);
 
-    Edge *addEdge(Vertex *dest, double w);
+    Edge *addEdge(Vertex *dest, double w, Service s);
 
-    bool removeEdge(int destID);
+    bool removeEdge(const std::string& destID);
 
     //friend class MutablePriorityQueue<Vertex>;
 
 protected:
-    int id;                // identifier
+    std::string id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
     // auxiliary fields

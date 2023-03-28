@@ -36,7 +36,8 @@ public:
 
     std::optional<Station> findStation(const std::string &name);
 
-    Station &addStationEntry(const std::string &name, const std::string &district, const std::string &municipality,
+    Station addStationEntry(const std::string &name, const std::string &district, const std::string &municipality,
+                             const std::string &township,
                              const std::string &line);
 
     void addStationToDistrictEntry(const std::string &district, const Station &station);

@@ -4,10 +4,14 @@
 
 #include "station.h"
 
-Station::Station(const std::string &name, const std::string &district, const std::string &municipality,
-                 const std::string &line) : name(name), district(district), municipality(municipality), line(line) {}
+#include <utility>
 
-Station::Station(const std::string &name) : name(name) {}
+Station::Station(std::string name, std::string district, std::string municipality,
+                 std::string township,
+                 std::string line) : name(std::move(name)), district(std::move(district)), municipality(std::move(municipality)),
+                                            township(std::move(township)), line(std::move(line)) {}
+
+Station::Station(std::string name) : name(std::move(name)) {}
 
 //Getters
 
@@ -21,6 +25,10 @@ const std::string &Station::getDistrict() const {
 
 const std::string &Station::getMunicipality() const {
     return municipality;
+}
+
+const std::string &Station::getTownship() const {
+    return township;
 }
 
 const std::string &Station::getLine() const {
@@ -39,6 +47,10 @@ void Station::setMunicipality(const std::string &municipality) {
     Station::municipality = municipality;
 }
 
+void Station::setTownship(const std::string &township) {
+    Station::township = township;
+}
+
 void Station::setLine(const std::string &line) {
     Station::line = line;
 }
@@ -50,3 +62,7 @@ Station &Station::operator=(const Station &station) {
     this->line = station.line;
     return *this;
 }
+
+
+
+

@@ -18,7 +18,7 @@
 
 class Menu {
 private:
-    Graph graph = Graph(0);
+    Graph graph;
     DataRepository dataRepository;
     std::string static const stationsFilePath;
     std::string static const networkFilePath;
@@ -28,11 +28,11 @@ private:
 public:
     Menu();
 
-    void extractStationsFile();
+    bool extractStationsFile();
 
-    void extractNetworkFile();
+    bool extractNetworkFile();
 
-    void extractFileInfo();
+    bool extractFileInfo();
 
     void initializeMenu();
 
