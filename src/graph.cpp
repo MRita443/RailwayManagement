@@ -223,31 +223,27 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     int id = 0;
     int choice = 0;
-    int currentEdges = 0;
     std::vector<Edge*> deactivatedEdges = {};
-    while(currentEdges < numEdges){
+    while(deactivatedEdges.size() < numEdges){
         id = rand() % vertexSet.size();
         choice = rand() % vertexSet[id]->getAdj().size();
         if(vertexSet[id]->getAdj()[choice]->isSelected()){
            vertexSet[id]->getAdj()[choice]->setSelected(false);
            deactivatedEdges.push_back(vertexSet[id]->getAdj()[choice]);
-           currentEdges++;
         }
     }
     return deactivatedEdges;
 }
 
-std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> Edges) {
-    std::vector<Edge*> deactivatedEdges = {};
-    for(Edge* edge : Edges){
+std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
+    for(Edge* edge : edges){
         edge->setSelected(false);
-        deactivatedEdges.push_back(edge);
     }
-    return deactivatedEdges;
+    return edges;
 }
 
-void Graph::activateEdges(std::vector<Edge *> Edges) {
-    for(Edge* edge : Edges){
+void Graph::activateEdges(std::vector<Edge *> edges) {
+    for(Edge* edge : edges){
         edge->setSelected(true);
     }
 }
