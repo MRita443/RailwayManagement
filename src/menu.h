@@ -28,9 +28,9 @@ private:
 public:
     Menu();
 
-    bool extractStationsFile();
+    void extractStationsFile();
 
-    bool extractNetworkFile();
+    void extractNetworkFile();
 
     void extractFileInfo();
 

@@ -106,7 +106,7 @@ void Menu::mainMenu() {
                 break;
             }
             case '2': {
-                //commandIn = costOptMenu();
+                commandIn = costOptMenu();
                 break;
             }
             case '3': {
@@ -129,7 +129,7 @@ void Menu::mainMenu() {
  * Extracts and stores the information of stations.csv
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
  */
-bool Menu::extractStationsFile() {
+void Menu::extractStationsFile() {
     {
         ifstream stations(stationsFilePath);
 
@@ -193,9 +193,8 @@ bool Menu::extractStationsFile() {
 /**
  * Extracts and stores the information of flights.csv
  * Time Complexity: 0(n*v), where n is the number of lines of network.csv and v is the number of nodes in graph
- * @return Returns true if the whole file was successfully read
  */
-bool Menu::extractNetworkFile() {
+void Menu::extractNetworkFile() {
 
     ifstream network(networkFilePath);
 
@@ -225,8 +224,6 @@ bool Menu::extractNetworkFile() {
             switch (counter++) {
                 case 0: {
                     sourceName = currentParam;
-                    if (sourceName == "Tomar")
-                        int a = 1;
                     break;
                 }
                 case 1: {
@@ -245,13 +242,12 @@ bool Menu::extractNetworkFile() {
             }
             if (counter == 0) {
                 if (!graph.addBidirectionalEdge(sourceName, targetName, capacity, service)) {
-                    cout << "An error occurred. Please try again";
-                    return false;
+                    cout << "An error occurred. Please try again" << endl;
+                    return;
                 }
             }
         }
     }
-    return true;
 }
 
 
@@ -342,6 +338,75 @@ unsigned int Menu::serviceMetricsMenu() {
                 }
                 case '6': {
                     //TODO: Top Municipalities Edmonds-Karp
+                    break;
+                }
+                case 'b': {
+                    return '\0';
+                }
+                case 'q': {
+                    cout << "Thank you for using our Railway Network Management System!" << endl;
+                    break;
+                }
+                default:
+                    cout << "Please press one of listed keys." << endl;
+                    break;
+            }
+        }
+    }
+    return commandIn;
+}
+
+
+/**
+ * Outputs cost optimization menu screen and decides graph function calls according to user input
+ * @return - Last inputted command, or '\0' for previous menu command
+ */
+unsigned int Menu::costOptMenu() {
+    unsigned char commandIn = '\0';
+
+    while (commandIn != 'q') {
+        if (commandIn == '\0') {
+            //Header
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "OPERATION COST";
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << " OPTIMIZATION" << endl;
+            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Two specific stations: [1]" << setw(COLUMN_WIDTH) << endl;
+            cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+        }
+
+        while (commandIn != 'q') {
+            cout << endl << "Please select how to input the location whose max number of trains you'd like to check: ";
+            cin >> commandIn;
+
+            if (!checkInput(1)) {
+                commandIn = '\0';
+                continue;
+            }
+            switch (commandIn) {
+                case '1': {
+                    string departureName;
+                    cout << "Enter the name of the departure station: ";
+                    cin >> departureName;
+                    if (!checkInput()) break;
+                    optional<Station> departureStation = dataRepository.findStation(departureName);
+                    if (!departureStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+
+                    string arrivalName;
+                    cout << "Enter the name of the arrival station: ";
+                    cin >> arrivalName;
+                    if (!checkInput()) break;
+                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
+                    if (!arrivalStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+                    cout
+                            << "Prioritizing minimum cost, we suggest a maximum of"/*<< graph.edmondsKarp(departureName, arrivalName) TODO: Max Flow Min cost*/
+                            << " trains traveling simultaneously between "
+                            << departureName
+                            << " and " << arrivalName << ", totaling an operation cost of " << "€." << endl;
                     break;
                 }
                 case 'b': {
