@@ -209,7 +209,7 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
  * Time Complexity: O(|V|+|E|)
  * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
+std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
     std::vector<Vertex *> eol_stations;
     std::queue<Vertex *> q;
 
@@ -229,4 +229,24 @@ std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
     }
 
     return eol_stations;
+}
+
+std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculateNetworkMaxFlow() {
+    unsigned int max = -1;
+    std::list<std::pair<Vertex *,Vertex *>> stationList;
+    for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++){
+        for (auto itV2 = itV1; itV2 < vertexSet.end(); itV2++){
+            Vertex * v1 = *itV1++;
+            Vertex * v2 = *itV2;
+            if (path(v1->getId(), v2->getId() )){
+                unsigned int itFlow = edmondsKarp(v1->getId(), v2->getId());
+                if (itFlow == max) stationList.push_back({v1,v2});
+                if (itFlow > max) {
+                    max = itFlow;
+                    stationList = {{v1, v2}};
+                }
+            }
+        }
+    }
+    return {stationList, max};
 }

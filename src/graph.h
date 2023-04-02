@@ -10,6 +10,8 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <tuple>
+#include <list>
 #include <algorithm>
 
 #include "vertex.h"
@@ -27,7 +29,7 @@ protected:
 
     void augmentPath(const std::string &source, const std::string &target, const double &value) const;
 
-    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const int stationId) const;
+    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string stationId) const;
 
 public:
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
@@ -41,6 +43,10 @@ public:
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     void edmondsKarp(const std::string &source, const std::string &target);
+
+    unsigned int multiSourceEdmondsKarp(const std::list<std::string>> &source, const std::string &target);
+
+    std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> calculateNetworkMaxFlow();
 };
 
 
