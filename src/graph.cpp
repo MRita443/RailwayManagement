@@ -231,6 +231,25 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
     return eol_stations;
 }
 
+/**
+ * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
+ * Time Complexity: O(|V|+|E|)
+ * @param source - Vertex where the DFS starts
+ */
+void Graph::visitedDFS(Vertex *source) {
+    source->setVisited(true);
+    for (Edge *e : source->getAdj()){
+        if (!e->getDest()->isVisited()){
+            visitedDFS(e->getDest());
+        }
+    }
+}
+
+/**
+ * Finds the pairs of stations with max Max-Flow
+ * Time Complexity: O(V^2*(VE^2)) //TODO someone check if V^2 is the correct ammount of times EdmondsKarp is called
+ * @return
+ */
 std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculateNetworkMaxFlow() {
     unsigned int max = -1;
     std::list<std::pair<Vertex *,Vertex *>> stationList;
@@ -238,7 +257,9 @@ std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculate
         for (auto itV2 = itV1; itV2 < vertexSet.end(); itV2++){
             Vertex * v1 = *itV1++;
             Vertex * v2 = *itV2;
-            if (path(v1->getId(), v2->getId() )){
+            for (Vertex *aux : vertexSet) aux->setVisited(false);
+            visitedDFS(v1);
+            if (v2->isVisited()){
                 unsigned int itFlow = edmondsKarp(v1->getId(), v2->getId());
                 if (itFlow == max) stationList.push_back({v1,v2});
                 if (itFlow > max) {

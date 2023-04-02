@@ -25,6 +25,8 @@ protected:
 
     bool path(const std::string &source, const std::string &target);
 
+    void visitedDFS(Vertex *source);
+
     [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
 
     void augmentPath(const std::string &source, const std::string &target, const double &value) const;
