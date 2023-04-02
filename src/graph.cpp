@@ -211,3 +211,31 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
         }
     }
 }
+
+
+/**
+* Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
+ * Time Complexity: O(|V|+|E|)
+ * @param stationId - Id of the starting station
+*/
+std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
+    std::vector<Vertex *> eol_stations;
+    std::queue<Vertex *> q;
+
+    for (Vertex * v: vertexSet) v->setVisited(false);
+    q.push(findVertex(stationId));
+
+    while(!q.empty()){
+        Vertex *curr = q.front();
+        q.pop();
+        curr->setVisited(true);
+        if (curr->getAdj().size() == 1) eol_stations.push_back(curr);
+        for (Edge *e : curr->getAdj()){
+            if(!e->getDest()->isVisited()){
+                q.push(e->getDest());
+            }
+        }
+    }
+
+    return eol_stations;
+}
