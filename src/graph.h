@@ -13,35 +13,34 @@
 #include <algorithm>
 
 #include "vertex.h"
+#include "station.h"
 
 class Graph {
 protected:
     std::vector<Vertex *> vertexSet;    // vertex set
 
-    [[nodiscard]] unsigned int findVertexIdx(const int &id) const;
+    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
-    bool path(const int &source, const int &target);
+    bool path(const std::string &source, const std::string &target);
 
-    [[nodiscard]] double findBottleneck(const int &source, const int &target) const;
+    [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
 
-    void augmentPath(const int &source, const int &target, const double &value) const;
+    void augmentPath(const std::string &source, const std::string &target, const double &value) const;
 
     [[nodiscard]] std::vector<Vertex *> findEndOfLines(const int stationId) const;
 
 public:
-    [[nodiscard]] Vertex *findVertex(const int &id) const;
+    [[nodiscard]] Vertex *findVertex(const std::string &id) const;
 
-    bool addVertex(const int &id);
+    bool addVertex(const std::string &id);
 
-    [[nodiscard]] bool addEdge(const int &source, const int &dest, double c) const;
-
-    [[nodiscard]] bool addBidirectionalEdge(const int &source, const int &dest, double c) const;
+    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const;
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    void edmondsKarp(const int &source, const int &target);
+    void edmondsKarp(const std::string &source, const std::string &target);
 };
 
 

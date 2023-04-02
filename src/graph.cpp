@@ -19,7 +19,7 @@ std::vector<Vertex *> Graph::getVertexSet() const {
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
-Vertex *Graph::findVertex(const int &id) const {
+Vertex *Graph::findVertex(const std::string &id) const {
     for (auto v: vertexSet)
         if (v->getId() == id)
             return v;
@@ -32,7 +32,7 @@ Vertex *Graph::findVertex(const int &id) const {
  * @param id - Id of the vertex to be found
  * @return Index of the found Vertex, or -1 if none was found
  */
-unsigned int Graph::findVertexIdx(const int &id) const {
+unsigned int Graph::findVertexIdx(const std::string &id) const {
     for (unsigned i = 0; i < vertexSet.size(); i++)
         if (vertexSet[i]->getId() == id)
             return i;
@@ -40,52 +40,43 @@ unsigned int Graph::findVertexIdx(const int &id) const {
 }
 
 /**
- * Adds a vertex with a given id to the Graph
+ * Adds a vertex with a given id to the Graph, representing a given station
  * Time Complexity: O(|V|)
- * @param id - Id of the vertex to be added
+ * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
-bool Graph::addVertex(const int &id) {
+bool Graph::addVertex(const std::string &id) {
     if (findVertex(id) != nullptr)
         return false;
     vertexSet.push_back(new Vertex(id));
     return true;
 }
 
-/**
- * Adds a unidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c.
- * Time Complexity: O(|V|)
- * @param source - Id of the source Vertex
- * @param dest - Id of the destination Vertex
- * @param c - Capacity of the Edge to be added
- * @return True if successful, and false if the source or destination vertices do not exist
- */
-bool Graph::addEdge(const int &source, const int &dest, double c) const {
-    auto v1 = findVertex(source);
-    auto v2 = findVertex(dest);
-    if (v1 == nullptr || v2 == nullptr)
-        return false;
-    v1->addEdge(v2, c);
-    return true;
-}
 
 /**
- * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c.
+ * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
  * Time Complexity: O(|V|)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param c - Capacity of the Edge to be added
+ * @param service - Service of the Edge to be added
  * @return True if successful, and false if the source or destination vertices do not exist
  */
-bool Graph::addBidirectionalEdge(const int &source, const int &dest, double c) const {
+bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-    auto e1 = v1->addEdge(v2, c);
-    auto e2 = v2->addEdge(v1, c);
+
+    //Sets each Edge and its reverse to share flow attribute
+    double sharedFlow = 0;
+
+    auto e1 = v1->addEdge(v2, c, service);
+    auto e2 = v2->addEdge(v1, c, service);
     e1->setReverse(e2);
     e2->setReverse(e1);
+    e1->setFlow(&sharedFlow);
+    e2->setFlow(&sharedFlow);
     return true;
 }
 
@@ -95,7 +86,7 @@ bool Graph::addBidirectionalEdge(const int &source, const int &dest, double c) c
  * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  */
-void Graph::edmondsKarp(const int &source, const int &target) {
+void Graph::edmondsKarp(const std::string &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
@@ -114,14 +105,14 @@ void Graph::edmondsKarp(const int &source, const int &target) {
  * @param target - Id of the target Vertex
  * @return True if a path was found, false if not
  */
-bool Graph::path(const int &source, const int &target) {
+bool Graph::path(const std::string &source, const std::string &target) {
 
     for (Vertex *v: vertexSet) {
         v->setVisited(false);
         v->setPath(nullptr);
     }
 
-    std::queue<int> q;
+    std::queue<std::string> q;
     q.push(source);
     findVertex(source)->setVisited(true);
 
@@ -131,7 +122,7 @@ bool Graph::path(const int &source, const int &target) {
 
 
         for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && e->getFlow() < e->getCapacity() && e->isSelected()) {
+            if (!e->getDest()->isVisited() && *e->getFlow() < e->getCapacity() && e->isSelected()) {
                 q.push(e->getDest()->getId());
                 e->getDest()->setVisited(true);
                 e->getDest()->setPath(e);
@@ -140,7 +131,7 @@ bool Graph::path(const int &source, const int &target) {
         }
 
         for (Edge *e: currentVertex->getIncoming()) {
-            if (!e->getOrig()->isVisited() && e->getFlow() > 0 && e->isSelected()) {
+            if (!e->getOrig()->isVisited() && *e->getFlow() > 0 && e->isSelected()) {
                 q.push(e->getOrig()->getId());
                 e->getOrig()->setVisited(true);
                 e->getOrig()->setPath(e);
@@ -159,7 +150,7 @@ bool Graph::path(const int &source, const int &target) {
  * @param target - Id of the target Vertex
  * @return Bottleneck of the path connecting source to target
  */
-double Graph::findBottleneck(const int &source, const int &target) const {
+double Graph::findBottleneck(const std::string &source, const std::string &target) const {
     Vertex *currentVertex = findVertex(target);
     double currBottleneck;
     double bottleneck = INF;
@@ -169,11 +160,11 @@ double Graph::findBottleneck(const int &source, const int &target) const {
         if (currentVertex->getPath()->getDest() == currentVertex) //Regular Edge
         {
             currBottleneck = currentVertex->getPath()->getCapacity() -
-                             currentVertex->getPath()->getFlow();
+                             *currentVertex->getPath()->getFlow();
             currentVertex = currentVertex->getPath()->getOrig();
         } else //Residual Edge (was traversed backwards)
         {
-            currBottleneck = currentVertex->getPath()->getFlow();
+            currBottleneck = *currentVertex->getPath()->getFlow();
             currentVertex = currentVertex->getPath()->getDest();
         }
 
@@ -191,7 +182,7 @@ double Graph::findBottleneck(const int &source, const int &target) const {
  * @param target - Id of the target Vertex
  * @param value - Number of units to augment the flow by
  */
-void Graph::augmentPath(const int &source, const int &target, const double &value) const {
+void Graph::augmentPath(const std::string &source, const std::string &target, const double &value) const {
     Vertex *currentVertex = findVertex(target);
 
     while (currentVertex->getId() != source) {
