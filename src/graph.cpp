@@ -69,7 +69,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
         return false;
 
     //Sets each Edge and its reverse to share flow attribute
-    double sharedFlow = 0;
+    unsigned int sharedFlow = 0;
 
     auto e1 = v1->addEdge(v2, c, service);
     auto e2 = v2->addEdge(v1, c, service);
@@ -209,7 +209,7 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
  * Time Complexity: O(|V|+|E|)
  * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
+std::vector<Vertex *> Graph::findEndOfLines(const std::string &stationId) const {
     std::vector<Vertex *> eol_stations;
     std::queue<Vertex *> q;
 

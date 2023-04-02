@@ -5,8 +5,6 @@
 #ifndef RAILWAYMANAGEMENT_VERTEX_H
 #define RAILWAYMANAGEMENT_VERTEX_H
 
-class Edge;
-
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -15,6 +13,9 @@ class Edge;
 #include "edge.h"
 
 #define INF std::numeric_limits<double>::max()
+
+class Edge;
+enum Service: unsigned int;
 
 class Vertex {
 public:

@@ -30,7 +30,7 @@ bool Edge::isSelected() const {
     return this->selected;
 }
 
-unsigned int* Edge::getFlow() const {
+unsigned int *Edge::getFlow() const {
     return flow;
 }
 
@@ -44,6 +44,7 @@ void Edge::setReverse(Edge *reverse) {
 
 void Edge::setService(Service service) {
     Edge::service = service;
+}
 
 void Edge::setFlow(unsigned int *flow) {
     this->flow = flow;

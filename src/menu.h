@@ -32,7 +32,7 @@ public:
 
     bool extractNetworkFile();
 
-    bool extractFileInfo();
+    void extractFileInfo();
 
     void initializeMenu();
 
