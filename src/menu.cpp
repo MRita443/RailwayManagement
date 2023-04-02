@@ -25,7 +25,8 @@ void Menu::initializeMenu() {
 
 /**
  * Delegates extracting file info, calling the appropriate functions for each file
- * TODO: Time Complexity
+ * Time Complexity: O(n*v), where n is the number of lines of network.csv and v is the number of lines in stations.csv
+ * @return Returns true if the both files were successfully read
  */
 bool Menu::extractFileInfo() {
     if (!extractStationsFile()) return false;
@@ -129,6 +130,7 @@ void Menu::mainMenu() {
 /**
  * Extracts and stores the information of stations.csv
  * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
+ * @return Returns true if the whole file was successfully read
  */
 bool Menu::extractStationsFile() {
     {
@@ -183,6 +185,7 @@ bool Menu::extractStationsFile() {
 /**
  * Extracts and stores the information of flights.csv
  * Time Complexity: 0(n*v), where n is the number of lines of network.csv and v is the number of nodes in graph
+ * @return Returns true if the whole file was successfully read
  */
 bool Menu::extractNetworkFile() {
 

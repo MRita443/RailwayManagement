@@ -44,7 +44,7 @@ void DataRepository::setTownshipToStations(const unordered_map<std::string, std:
 
 /**
  * Adds a new entry to the unordered_set of Stations, creating the corresponding Station object
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(stations)) (worst case)
  * @param name - Name of the station to be created
  * @param district - District of the Station to be created
  * @param municipality - Municipality of the Station to be created
@@ -64,7 +64,7 @@ DataRepository::addStationEntry(const std::string &name, const std::string &dist
 
 /**
  * Adds a new Station value to an entry in the districtToStations unordered_map
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(districtToStations)) (worst case)
  * @param district - District of the new Station
  * @param station - Station to add
  */
@@ -74,7 +74,7 @@ void DataRepository::addStationToDistrictEntry(const string &district, const Sta
 
 /**
  * Adds a new Station value to an entry in the municipalityToStations unordered_map
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(municipalityToStations)) (worst case)
  * @param municipality - Municipality of the new Station
  * @param station - Station to add
  */
@@ -84,7 +84,7 @@ void DataRepository::addStationToMunicipalityEntry(const std::string &municipali
 
 /**
  * Adds a new Station value to an entry in the townshipToStations unordered_map
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(townshipToStations)) (worst case)
  * @param township - Township of the new Station
  * @param station - Station to add
  */
@@ -95,7 +95,7 @@ void DataRepository::addStationToTownshipEntry(const std::string &township, cons
 
 /**
  * Finds the Station object with the given name
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(stations)) (worst case)
  * @param name - Name of the Station to be returned
  * @return optional<Station> value which will contain the Station object, or be empty if no such Station was found
  */
@@ -109,7 +109,7 @@ std::optional<Station> DataRepository::findStation(const string &name) {
 
 /**
  * Finds the Station objects with the given district
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(districtToStations)) (worst case)
  * @param district - District whose Stations should be found
  * @return list<Station> containing the Stations in the given district
  */
@@ -119,7 +119,7 @@ list<Station> DataRepository::findStationsInDistrict(const std::string &district
 
 /**
  * Finds the Station objects with the given municipality
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(municipalityToStations)) (worst case)
  * @param municipality - Municipality whose Stations should be found
  * @return list<Station> containing the Stations in the given municipality
  */
@@ -129,7 +129,7 @@ list<Station> DataRepository::findStationsInMunicipality(const std::string &muni
 
 /**
  * Finds the Station objects with the given township
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(townshipToStations)) (worst case)
  * @param township - Township whose Stations should be found
  * @return list<Station> containing the Stations in the given township
  */
@@ -139,7 +139,7 @@ list<Station> DataRepository::findStationsInTownship(const std::string &township
 
 /**
  * Checks if the given district is valid, that is, if there is stored data referencing it
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(districtToStations)) (worst case)
  * @param district - District to be validated
  * @return true if the district is valid, false if it is not
  */
@@ -149,7 +149,7 @@ bool DataRepository::checkValidDistrict(const std::string &district) {
 
 /**
  * Checks if the given municipality is valid, that is, if there is stored data referencing it
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(municipalityToStations)) (worst case)
  * @param municipality - Municipality to be validated
  * @return true if the municipality is valid, false if it is not
  */
@@ -159,7 +159,7 @@ bool DataRepository::checkValidMunicipality(const std::string &municipality) {
 
 /**
  * Checks if the given township is valid, that is, if there is stored data referencing it
- * Time Complexity: O(1) (average case) | O(size()) (worst case)
+ * Time Complexity: O(1) (average case) | O(size(townshipToStations)) (worst case)
  * @param township - Township to be validated
  * @return true if the township is valid, false if it is not
  */
