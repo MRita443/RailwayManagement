@@ -26,7 +26,7 @@ protected:
 
     void augmentPath(const int &source, const int &target, const double &value) const;
 
-    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const int &station) const;
+    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const int stationId) const;
 
 public:
     [[nodiscard]] Vertex *findVertex(const int &id) const;

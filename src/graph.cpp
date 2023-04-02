@@ -216,14 +216,14 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 /**
 * Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
  * Time Complexity: O(|V|+|E|)
- * @param station - Id of the starting station
+ * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const int &station) const {
+std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
     std::vector<Vertex *> eol_stations;
     std::queue<Vertex *> q;
 
     for (Vertex * v: vertexSet) v->setVisited(false);
-    q.push(findVertex(station));
+    q.push(findVertex(stationId));
 
     while(!q.empty()){
         Vertex *curr = q.front();
