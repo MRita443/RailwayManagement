@@ -221,15 +221,17 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 
 //change to return void
 std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
-    int id = 0;
+    int stationNum = 0;
+    Vertex* currentVertex;
     int choice = 0;
     std::vector<Edge*> deactivatedEdges = {};
     while(deactivatedEdges.size() < numEdges){
-        id = rand() % vertexSet.size();
-        choice = rand() % vertexSet[id]->getAdj().size();
-        if(vertexSet[id]->getAdj()[choice]->isSelected()){
-           vertexSet[id]->getAdj()[choice]->setSelected(false);
-           deactivatedEdges.push_back(vertexSet[id]->getAdj()[choice]);
+        stationNum = rand() % vertexSet.size();
+        currentVertex = findVertex(stationNum);
+        choice = rand() % vertexSet[stationNum]->getAdj().size();
+        if(currentVertex->getAdj()[choice]->isSelected()){
+           currentVertex->getAdj()[choice]->setSelected(false);
+           deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
         }
     }
     return deactivatedEdges;
