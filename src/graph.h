@@ -44,9 +44,9 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    void edmondsKarp(const std::list<std::string> &source, const std::string &target);
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
 
-    //unsigned int multiSourceEdmondsKarp(const std::list<std::string>> &source, const std::string &target);
+    unsigned int incomingFlux(const std::string &station);
 
     std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> calculateNetworkMaxFlow();
 };

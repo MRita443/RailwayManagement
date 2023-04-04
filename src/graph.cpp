@@ -86,7 +86,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  */
-void Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
+unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
@@ -100,6 +100,7 @@ void Graph::edmondsKarp(const std::list<std::string> &source, const std::string 
         }
         augmentPath(it_source->getId(), target, findBottleneck(it_source->getId(), target));
     }
+    return 0;
 }
 
 /**
@@ -266,7 +267,7 @@ std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculate
             for (Vertex *aux : vertexSet) aux->setVisited(false);
             visitedDFS(v1);
             if (v2->isVisited()){
-                unsigned int itFlow = edmondsKarp(v1->getId(), v2->getId());
+                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId());
                 if (itFlow == max) stationList.push_back({v1,v2});
                 if (itFlow > max) {
                     max = itFlow;
@@ -276,4 +277,15 @@ std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculate
         }
     }
     return {stationList, max};
+}
+
+unsigned int Graph::incomingFlux(const std::string &station) {
+    std::list<std::string> super_source = findEndOfLines(station);
+    for (auto it = super_source.begin(); it != super_source.end(); it++)
+        if (*it == station) {
+            super_source.erase(it);
+            break;
+        }
+
+    return edmondsKarp(findEndOfLines(station),station);
 }
