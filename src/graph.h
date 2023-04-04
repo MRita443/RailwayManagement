@@ -23,7 +23,7 @@ protected:
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
-    bool path(const std::string &source, const std::string &target);
+    bool path(const std::list<std::string> &source, const std::string &target);
 
     void visitedDFS(Vertex *source);
 
@@ -31,7 +31,7 @@ protected:
 
     void augmentPath(const std::string &source, const std::string &target, const double &value) const;
 
-    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string stationId) const;
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
 public:
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
@@ -44,9 +44,9 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    void edmondsKarp(const std::string &source, const std::string &target);
+    void edmondsKarp(const std::list<std::string> &source, const std::string &target);
 
-    unsigned int multiSourceEdmondsKarp(const std::list<std::string>> &source, const std::string &target);
+    //unsigned int multiSourceEdmondsKarp(const std::list<std::string>> &source, const std::string &target);
 
     std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> calculateNetworkMaxFlow();
 };

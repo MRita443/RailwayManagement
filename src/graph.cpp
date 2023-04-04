@@ -86,7 +86,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  */
-void Graph::edmondsKarp(const std::string &source, const std::string &target) {
+void Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
@@ -94,7 +94,11 @@ void Graph::edmondsKarp(const std::string &source, const std::string &target) {
     }
 
     while (path(source, target)) {
-        augmentPath(source, target, findBottleneck(source, target));
+        Vertex *it_source = findVertex(target)->getPath()->getOrig();
+        while (it_source->getPath()->getOrig() != nullptr){
+            it_source = it_source->getPath()->getOrig();
+        }
+        augmentPath(it_source->getId(), target, findBottleneck(it_source->getId(), target));
     }
 }
 
@@ -105,7 +109,7 @@ void Graph::edmondsKarp(const std::string &source, const std::string &target) {
  * @param target - Id of the target Vertex
  * @return True if a path was found, false if not
  */
-bool Graph::path(const std::string &source, const std::string &target) {
+bool Graph::path(const std::list<std::string> &source, const std::string &target) {
 
     for (Vertex *v: vertexSet) {
         v->setVisited(false);
@@ -113,8 +117,10 @@ bool Graph::path(const std::string &source, const std::string &target) {
     }
 
     std::queue<std::string> q;
-    q.push(source);
-    findVertex(source)->setVisited(true);
+    for (const auto & it : source) {
+        q.push(it);
+        findVertex(it)->setVisited(true);
+    }
 
     while (!q.empty()) {
         Vertex *currentVertex = findVertex(q.front());
@@ -209,8 +215,8 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
  * Time Complexity: O(|V|+|E|)
  * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
-    std::vector<Vertex *> eol_stations;
+std::list<std::string> Graph::findEndOfLines(const std::string& stationId) const {
+    std::list<std::string> eol_stations;
     std::queue<Vertex *> q;
 
     for (Vertex * v: vertexSet) v->setVisited(false);
@@ -220,7 +226,7 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
         Vertex *curr = q.front();
         q.pop();
         curr->setVisited(true);
-        if (curr->getAdj().size() == 1) eol_stations.push_back(curr);
+        if (curr->getAdj().size() == 1) eol_stations.push_back(curr->getId());
         for (Edge *e : curr->getAdj()){
             if(!e->getDest()->isVisited()){
                 q.push(e->getDest());
