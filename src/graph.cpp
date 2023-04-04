@@ -220,6 +220,13 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 }
 
 //change to return void
+
+/**
+ * Takes a number and sets the bool "selected" of that amount of edges to false
+ * Time Complexity: O(VE)
+ * @param numEdges - Number of edges to be deactivated
+ * @return A vector of pointers for all the edges that were deactivated
+ */
 std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     int stationNum = 0;
     Vertex* currentVertex;
@@ -228,7 +235,7 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     while(deactivatedEdges.size() < numEdges){
         stationNum = rand() % vertexSet.size();
         currentVertex = findVertex(stationNum);
-        choice = rand() % vertexSet[stationNum]->getAdj().size();
+        choice = rand() % currentVertex->getAdj().size();
         if(currentVertex->getAdj()[choice]->isSelected()){
            currentVertex->getAdj()[choice]->setSelected(false);
            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
@@ -237,6 +244,12 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     return deactivatedEdges;
 }
 
+/**
+ * Takes a vector of edge pointers and sets the selected state of those edges to false
+ * Time Complexity: O(N)
+ * @param edges - Vector of edge pointers to be deactivated
+ * @return A vector of pointers for all edges that were deactivated
+ */
 std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(false);
@@ -244,12 +257,25 @@ std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
     return edges;
 }
 
+/**
+ * Takes a vector of edge pointers and sets the selected state of those edges to true
+ * Time Complexity: O(N)
+ * @param edges - Vector of edge pointers to be activated
+ */
 void Graph::activateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(true);
     }
 }
 
+/**
+ * Calculates the maximum flow between a source vertex and a target vertex with (numEdges) number of random edges being deactivated and reactivated after calculating the maximum flow
+ * Time Complexity: O(|VE²|)
+ * @param numEdges - Number of edges to be deactivated and later reactivated
+ * @param source - Id of the source Vertex
+ * @param target - Id of the target Vertex
+ * @return The value of the Max Flow with the interrupted lines
+ */
 unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
     unsigned int maxFlowInterrupted = edmondsKarp(source, target);
@@ -257,6 +283,14 @@ unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int
     return maxFlowInterrupted;
 }
 
+/**
+ *Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
+ * Time Complexity: O(|VE²|)
+ * @param selectedEdges - Vector of edges to be deactivated and later reactivated
+ * @param source - Id of the source Vertex
+ * @param target - Id of the target Vertex
+ * @return The value of the Max Flow with the interrupted lines
+ */
 unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(selectedEdges);
     unsigned int maxFlowInterrupted = edmondsKarp(source, target);

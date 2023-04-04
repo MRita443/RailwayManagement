@@ -48,6 +48,7 @@ public:
     void activateEdges(std::vector<Edge*> Edges);
 
     unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target);
+
     unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target);
 };
 
