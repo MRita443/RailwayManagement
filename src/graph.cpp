@@ -81,9 +81,9 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
 }
 
 /**
- * Standard Edmonds-Karp algorithm to find the the network's max flow
+ * Single-source or Multi-source Edmonds-Karp algorithm to find the the network's max flow
  * Time Complexity: O(|VE²|)
- * @param source - Id of the source Vertex
+ * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
  */
 unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
@@ -106,7 +106,7 @@ unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std:
 /**
  * Adapted BFS (to use residual graph edges) that checks if there is a valid path connecting the source and target vertices
  * Time Complexity: O(|E|)
- * @param source - Id of the source Vertex
+ * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
  * @return True if a path was found, false if not
  */
@@ -213,7 +213,7 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
 
 /**
 * Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V+E|)
  * @param stationId - Id of the starting station
 */
 std::list<std::string> Graph::findEndOfLines(const std::string& stationId) const {
@@ -279,6 +279,11 @@ std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculate
     return {stationList, max};
 }
 
+/**
+ * Finds the incoming flux that a certain station can receive (i.e the ammount of trains that can arrive there at the same time)
+ * Time Complexity: O(|VE^2|)
+ * @param station - Station's ID
+ */
 unsigned int Graph::incomingFlux(const std::string &station) {
     std::list<std::string> super_source = findEndOfLines(station);
     for (auto it = super_source.begin(); it != super_source.end(); it++)
