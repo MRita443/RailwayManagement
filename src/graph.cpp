@@ -94,11 +94,7 @@ unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std:
     }
 
     while (path(source, target)) {
-        Vertex *it_source = findVertex(target)->getPath()->getOrig();
-        while (it_source->getPath()->getOrig() != nullptr){
-            it_source = it_source->getPath()->getOrig();
-        }
-        augmentPath(it_source->getId(), target, findBottleneck(it_source->getId(), target));
+        augmentPath(target, findBottleneck(target));
     }
     return 0;
 }
