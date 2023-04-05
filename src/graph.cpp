@@ -87,7 +87,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  * @param target - Id of the target Vertex
  */
 
-unsigned int Graph::edmondsKarp(const int &source, const int &target) {
+unsigned int Graph::edmondsKarp(const std::string &source, const std::string &target) {
     int maxFlow = 0;
 
     for (Vertex *v: vertexSet) {
@@ -227,10 +227,11 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
     std::vector<Edge*> deactivatedEdges = {};
     while(deactivatedEdges.size() < numEdges){
         stationNum = rand() % vertexSet.size();
-        currentVertex = findVertex(stationNum);
+        currentVertex = vertexSet[stationNum];
         choice = rand() % currentVertex->getAdj().size();
         if(currentVertex->getAdj()[choice]->isSelected()){
            currentVertex->getAdj()[choice]->setSelected(false);
+            currentVertex->getAdj()[choice]->getReverse()->setSelected(false);
            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
            }
     }
