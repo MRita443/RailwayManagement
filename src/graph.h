@@ -25,9 +25,9 @@ protected:
 
     bool path(const std::string &source, const std::string &target);
 
-    [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
+    [[nodiscard]] double findBottleneck(const std::string &target) const;
 
-    void augmentPath(const std::string &source, const std::string &target, const unsigned int &value) const;
+    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string &stationId) const;
 

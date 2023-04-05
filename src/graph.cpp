@@ -100,7 +100,7 @@ void Graph::edmondsKarp(const std::string &source, const std::string &target) {
     }
 
     while (path(source, target)) {
-        augmentPath(source, target, findBottleneck(source, target));
+        augmentPath(target, findBottleneck(target));
     }
 }
 
@@ -156,12 +156,12 @@ bool Graph::path(const std::string &source, const std::string &target) {
  * @param target - Id of the target Vertex
  * @return Bottleneck of the path connecting source to target
  */
-double Graph::findBottleneck(const std::string &source, const std::string &target) const {
+double Graph::findBottleneck(const std::string &target) const {
     Vertex *currentVertex = findVertex(target);
     double currBottleneck;
     double bottleneck = INF;
 
-    while (currentVertex->getId() != source) {
+    while (currentVertex->getPath() != nullptr) {
 
         if (currentVertex->getPath()->getDest() == currentVertex) //Regular Edge
         {
@@ -188,23 +188,20 @@ double Graph::findBottleneck(const std::string &source, const std::string &targe
  * @param target - Id of the target Vertex
  * @param value - Number of units to augment the flow by
  */
-void Graph::augmentPath(const std::string &source, const std::string &target, const unsigned int &value) const {
+void Graph::augmentPath(const std::string &target, const unsigned int &value) const {
     Vertex *currentVertex = findVertex(target);
 
-    while (currentVertex->getId() != source) {
+    while (currentVertex->getPath() != nullptr) {
         Edge *currentPath = currentVertex->getPath();
 
-        if (currentPath != nullptr) {
+        if (currentPath->getDest() == currentVertex) //Regular Edge
+        {
+            currentPath->setFlowValue(*(currentPath->getFlow()) + value);
+            currentVertex = currentVertex->getPath()->getOrig();
 
-            if (currentPath->getDest() == currentVertex) //Regular Edge
-            {
-                currentPath->setFlowValue(*(currentPath->getFlow()) + value);
-                currentVertex = currentVertex->getPath()->getOrig();
-
-            } else { //Residual Edge (was traversed backwards)
-                currentPath->setFlowValue(*(currentPath->getFlow()) - value);
-                currentVertex = currentVertex->getPath()->getDest();
-            }
+        } else { //Residual Edge (was traversed backwards)
+            currentPath->setFlowValue(*(currentPath->getFlow()) - value);
+            currentVertex = currentVertex->getPath()->getDest();
         }
     }
 }
