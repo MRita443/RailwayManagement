@@ -232,7 +232,6 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
         if(currentVertex->getAdj()[choice]->isSelected()){
            currentVertex->getAdj()[choice]->setSelected(false);
            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
-           currentVertex->getAdj()[choice]->getReverse()->setSelected(false);
            }
     }
     return deactivatedEdges;
