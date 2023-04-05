@@ -69,7 +69,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
         return false;
 
     //Sets each Edge and its reverse to share flow attribute
-    double sharedFlow = 0;
+    unsigned int sharedFlow = 0;
 
     auto e1 = v1->addEdge(v2, c, service);
     auto e2 = v2->addEdge(v1, c, service);
@@ -88,7 +88,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  */
 
 unsigned int Graph::edmondsKarp(const std::string &source, const std::string &target) {
-    int maxFlow = 0;
+    unsigned int maxFlow = 0;
 
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
@@ -101,7 +101,8 @@ unsigned int Graph::edmondsKarp(const std::string &source, const std::string &ta
     }
 
     for(Edge* edge : findVertex(target)->getIncoming()){
-        maxFlow += edge->getFlow();
+        unsigned int *currentFlow = edge->getFlow();
+        maxFlow += *currentFlow;
     }
 
     return maxFlow;
@@ -216,7 +217,7 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
 
 /**
  * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
- * Time Complexity: O(|VE|)
+ * Time Complexity: O(|V|)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
  */
@@ -272,7 +273,7 @@ void Graph::activateEdges(std::vector<Edge *> edges) {
  * @param target - Id of the target Vertex
  * @return The value of the Max Flow with the interrupted lines
  */
-unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int &source, const int &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::string &source, const std::string &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
     unsigned int maxFlowInterrupted = edmondsKarp(source, target);
     activateEdges(deactivatedEdges);
@@ -287,7 +288,7 @@ unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const int
  * @param target - Id of the target Vertex
  * @return The value of the Max Flow with the interrupted lines
  */
-unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const int &source, const int &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::string &source, const std::string &target) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(selectedEdges);
     unsigned int maxFlowInterrupted = edmondsKarp(source, target);
     activateEdges(deactivatedEdges);
@@ -299,7 +300,7 @@ unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedE
  * Time Complexity: O(|V|+|E|)
  * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const int stationId) const {
+std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
     std::vector<Vertex *> eol_stations;
     std::queue<Vertex *> q;
 
