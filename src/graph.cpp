@@ -222,7 +222,7 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 //change to return void
 
 /**
- * Takes a number and sets the bool "selected" of that amount of edges to false
+ * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
  * Time Complexity: O(VE)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
@@ -239,13 +239,15 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
         if(currentVertex->getAdj()[choice]->isSelected()){
            currentVertex->getAdj()[choice]->setSelected(false);
            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
+           currentVertex->getAdj()[choice]->getReverse()->setSelected(false);
+           deactivatedEdges.push_back(currentVertex->getAdj()[choice]->getReverse());
         }
     }
     return deactivatedEdges;
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges to false
+ * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to false
  * Time Complexity: O(N)
  * @param edges - Vector of edge pointers to be deactivated
  * @return A vector of pointers for all edges that were deactivated
@@ -253,18 +255,20 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
 std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(false);
+        edge->getReverse()->setSelected(false);
     }
     return edges;
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges to true
+ * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to true
  * Time Complexity: O(N)
  * @param edges - Vector of edge pointers to be activated
  */
 void Graph::activateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(true);
+        edge->getReverse()->setSelected(true);
     }
 }
 
