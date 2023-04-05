@@ -14,12 +14,12 @@
 #include <sstream>
 #include <unordered_set>
 #include "graph.h"
-//#include "dataRepository.h"
+#include "dataRepository.h"
 
 class Menu {
 private:
-    //Graph graph = Graph(0);
-    //DataRepository dataRepository;
+    Graph graph;
+    DataRepository dataRepository;
     std::string static const stationsFilePath;
     std::string static const networkFilePath;
     unsigned static const COLUMN_WIDTH;
@@ -28,11 +28,11 @@ private:
 public:
     Menu();
 
-    void extractStationsFile();
+    bool extractStationsFile();
 
-    void extractNetworkFile();
+    bool extractNetworkFile();
 
-    void extractFileInfo();
+    bool extractFileInfo();
 
     void initializeMenu();
 

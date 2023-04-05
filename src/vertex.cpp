@@ -4,17 +4,20 @@
 
 #include "vertex.h"
 
-Vertex::Vertex(int id) : id(id) {}
+#include <utility>
+
+Vertex::Vertex(std::string id) : id(std::move(id)) {}
 
 /**
  * Adds a new outgoing edge to the Vertex, with a given destination and capacity
  * Time Complexity: O(1)
  * @param d - Pointer to the destination Vertex
  * @param w - Edge capacity
+ * @param service - Service of the Edge
  * @return Pointer to the new Edge created
  */
-Edge *Vertex::addEdge(Vertex *d, double w) {
-    auto newEdge = new Edge(this, d, w);
+Edge *Vertex::addEdge(Vertex *d, double w, Service service) {
+    auto newEdge = new Edge(this, d, w, service);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
     return newEdge;
@@ -26,7 +29,7 @@ Edge *Vertex::addEdge(Vertex *d, double w) {
  * @param destID - Id of the destination Vertex of the Edge to be removed
  * @return True if successful, and false if no such Edge exists
  */
-bool Vertex::removeEdge(int destID) {
+bool Vertex::removeEdge(const std::string& destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
@@ -56,7 +59,7 @@ bool Vertex::operator<(Vertex &vertex) const {
     return this->dist < vertex.dist;
 }
 
-int Vertex::getId() const {
+std::string Vertex::getId() const {
     return this->id;
 }
 
@@ -88,8 +91,8 @@ std::vector<Edge *> Vertex::getIncoming() const {
     return this->incoming;
 }
 
-void Vertex::setId(int id) {
-    this->id = id;
+void Vertex::setId(std::string id) {
+    this->id = std::move(id);
 }
 
 void Vertex::setVisited(bool visited) {

@@ -3,6 +3,7 @@
 //
 
 #include "menu.h"
+#include "station.h"
 
 using namespace std;
 
@@ -18,17 +19,19 @@ Menu::Menu() = default;
  * TODO: Time Complexity
  */
 void Menu::initializeMenu() {
-    extractFileInfo();
+    if (!extractFileInfo()) return;
     mainMenu();
 }
 
 /**
  * Delegates extracting file info, calling the appropriate functions for each file
- * TODO: Time Complexity
+ * Time Complexity: O(n*v), where n is the number of lines of network.csv and v is the number of lines in stations.csv
+ * @return Returns true if the both files were successfully read
  */
-void Menu::extractFileInfo() {
-    //extractStationsFile();
-    //extractNetworkFile();
+bool Menu::extractFileInfo() {
+    if (!extractStationsFile()) return false;
+    if (!extractNetworkFile()) return false;
+    return true;
 }
 
 /**
@@ -122,4 +125,109 @@ void Menu::mainMenu() {
             }
         }
     }
+}
+
+/**
+ * Extracts and stores the information of stations.csv
+ * Time Complexity: 0(n) (average case) | O(n²) (worst case), where n is the number of lines of stations.csv
+ * @return Returns true if the whole file was successfully read
+ */
+bool Menu::extractStationsFile() {
+    {
+        ifstream stations(stationsFilePath);
+
+        string currentParam, currentLine;
+        string name, district, municipality, township, line;
+
+        int counter = 0;
+
+        getline(stations, currentParam); //Ignore first line with just descriptors
+
+        while (getline(stations, currentLine)) {
+            istringstream iss(currentLine);
+            while (getline(iss, currentParam, ',')) {
+                switch (counter++) {
+                    case 0: {
+                        name = currentParam;
+                        break;
+                    }
+                    case 1: {
+                        district = currentParam;
+                        break;
+                    }
+                    case 2: {
+                        municipality = currentParam;
+                        break;
+                    }
+                    case 3: {
+                        township = currentParam;
+                        break;
+                    }
+                    case 4: {
+                        line = currentParam;
+                        counter = 0;
+                        break;
+                    }
+                }
+                if (counter == 0) {
+                    Station newStation = dataRepository.addStationEntry(name, district, municipality, township, line);
+                    if (!graph.addVertex(name)) return false;
+                    dataRepository.addStationToMunicipalityEntry(municipality, newStation);
+                    dataRepository.addStationToDistrictEntry(district, newStation);
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+/**
+ * Extracts and stores the information of flights.csv
+ * Time Complexity: 0(n*v), where n is the number of lines of network.csv and v is the number of nodes in graph
+ * @return Returns true if the whole file was successfully read
+ */
+bool Menu::extractNetworkFile() {
+
+    ifstream network(networkFilePath);
+
+    string currentParam, currentLine;
+    string sourceName, targetName;
+    Service service;
+    double capacity;
+
+    int counter = 0;
+
+    getline(network, currentParam); //Ignore first line with just descriptors
+
+    while (getline(network, currentLine)) {
+        istringstream iss(currentLine);
+        while (getline(iss, currentParam, ',')) {
+            switch (counter++) {
+                case 0: {
+                    sourceName = currentParam;
+                    break;
+                }
+                case 1: {
+                    targetName = currentParam;
+                    break;
+                }
+                case 2: {
+                    capacity = stod(currentParam);
+                    break;
+                }
+                case 3: {
+                    service = currentParam == "STANDARD" ? Service::STANDARD : Service::ALFA_PENDULAR;
+                    counter = 0;
+                }
+            }
+            if (counter == 0) {
+                if (!graph.addBidirectionalEdge(sourceName, targetName, capacity, service)) {
+                    cout << "An error occurred. Please try again";
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
