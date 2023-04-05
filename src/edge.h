@@ -44,6 +44,8 @@ public:
 
     void setFlowValue(unsigned int flow);
 
+    void print() const;
+
 protected:
     Vertex *dest; // destination vertex
     double capacity; // edge capacity

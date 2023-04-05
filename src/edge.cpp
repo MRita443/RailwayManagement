@@ -53,3 +53,7 @@ void Edge::setFlow(unsigned int *flow) {
 void Edge::setFlowValue(unsigned int flow) {
     *(this->flow) = flow;
 }
+
+void Edge::print() const {
+    std::cout << orig->getId() << " <-> " << dest->getId() << std::endl;
+}

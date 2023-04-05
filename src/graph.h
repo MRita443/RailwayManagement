@@ -17,6 +17,8 @@
 
 class Graph {
 protected:
+    unsigned int numEdges;
+
     std::vector<Vertex *> vertexSet;    // vertex set
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
@@ -25,7 +27,7 @@ protected:
 
     [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
 
-    void augmentPath(const std::string &source, const std::string &target, const double &value) const;
+    void augmentPath(const std::string &source, const std::string &target, const unsigned int &value) const;
 
     [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string &stationId) const;
 
@@ -34,13 +36,15 @@ public:
 
     bool addVertex(const std::string &id);
 
-    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const;
+    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service);
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     void edmondsKarp(const std::string &source, const std::string &target);
+
+    unsigned int getNumEdges();
 };
 
 

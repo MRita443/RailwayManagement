@@ -13,6 +13,10 @@ std::vector<Vertex *> Graph::getVertexSet() const {
     return vertexSet;
 }
 
+unsigned int Graph::getNumEdges() {
+    return numEdges;
+}
+
 /**
  * Finds the vertex with a given id
  * Time Complexity: O(|V|)
@@ -62,7 +66,7 @@ bool Graph::addVertex(const std::string &id) {
  * @param service - Service of the Edge to be added
  * @return True if successful, and false if the source or destination vertices do not exist
  */
-bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const {
+bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
@@ -77,6 +81,8 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
     e2->setReverse(e1);
     e1->setFlow(&sharedFlow);
     e2->setFlow(&sharedFlow);
+
+    numEdges++;
     return true;
 }
 
@@ -89,7 +95,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
 void Graph::edmondsKarp(const std::string &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
-            e->setFlow(0);
+            e->setFlowValue(0);
         }
     }
 
@@ -182,7 +188,7 @@ double Graph::findBottleneck(const std::string &source, const std::string &targe
  * @param target - Id of the target Vertex
  * @param value - Number of units to augment the flow by
  */
-void Graph::augmentPath(const std::string &source, const std::string &target, const double &value) const {
+void Graph::augmentPath(const std::string &source, const std::string &target, const unsigned int &value) const {
     Vertex *currentVertex = findVertex(target);
 
     while (currentVertex->getId() != source) {
@@ -213,16 +219,16 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string &stationId) const 
     std::vector<Vertex *> eol_stations;
     std::queue<Vertex *> q;
 
-    for (Vertex * v: vertexSet) v->setVisited(false);
+    for (Vertex *v: vertexSet) v->setVisited(false);
     q.push(findVertex(stationId));
 
-    while(!q.empty()){
+    while (!q.empty()) {
         Vertex *curr = q.front();
         q.pop();
         curr->setVisited(true);
         if (curr->getAdj().size() == 1) eol_stations.push_back(curr);
-        for (Edge *e : curr->getAdj()){
-            if(!e->getDest()->isVisited()){
+        for (Edge *e: curr->getAdj()) {
+            if (!e->getDest()->isVisited()) {
                 q.push(e->getDest());
             }
         }
@@ -230,3 +236,56 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string &stationId) const 
 
     return eol_stations;
 }
+
+/*
+bool Graph::minCostPath(const std::string &source, const std::string &target) {
+
+    for (Vertex *v: vertexSet) {
+        v->setVisited(false);
+        v->setPath(nullptr);
+        v->setCost(std::numeric_limits<double>::max());
+    }
+
+    Vertex* sourceVertex = findVertex(source);
+
+    std::priority_queue<std::pair<double, Vertex *>, std::vector<std::pair<double, Vertex *>>, std::greater<>> pq;
+    sourceVertex->setVisited(true);
+    sourceVertex->setCost(0);
+    pq.push(std::make_pair(0, sourceVertex));
+
+    while (!pq.empty()) {
+        Vertex *currentVertex = pq.top().second;
+        pq.pop();
+
+        if (currentVertex == findVertex(target)) {
+            return true;
+        }
+
+        for (Edge *e: currentVertex->getAdj()) {
+            if (!e->getDest()->isVisited() && *e->getFlow() < e->getCapacity() && e->isSelected()) {
+                double newCost = currentVertex->getCost() + e->getCost();
+                if (newCost < e->getDest()->getCost()) {
+                    e->getDest()->setVisited(true);
+                    e->getDest()->setCost(newCost);
+                    e->getDest()->setPath(e);
+                    pq.push(std::make_pair(newCost, e->getDest()));
+                }
+            }
+        }
+
+        for (Edge *e: currentVertex->getIncoming()) {
+            if (!e->getOrig()->isVisited() && *e->getFlow() > 0 && e->isSelected()) {
+                double newCost = currentVertex->getCost() - e->getCost();
+                if (newCost < e->getOrig()->getCost()) {
+                    e->getOrig()->setVisited(true);
+                    e->getOrig()->setCost(newCost);
+                    e->getOrig()->setPath(e);
+                    pq.push(std::make_pair(newCost, e->getOrig()));
+                }
+            }
+        }
+    }
+
+    return false;
+}*/
+

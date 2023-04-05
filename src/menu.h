@@ -40,9 +40,11 @@ public:
 
     unsigned int costOptMenu();
 
-    unsigned int sensitivityMenu();
+    unsigned int failuresMenu();
 
     void mainMenu();
+
+    std::vector<Edge *> edgeFailureMenu();
 
     static bool checkInput(unsigned int checkLength = 0);
 

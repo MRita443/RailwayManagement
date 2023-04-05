@@ -55,10 +55,6 @@ bool Vertex::removeEdge(const std::string& destID) {
     return removedEdge;
 }
 
-bool Vertex::operator<(Vertex &vertex) const {
-    return this->dist < vertex.dist;
-}
-
 std::string Vertex::getId() const {
     return this->id;
 }
@@ -79,8 +75,8 @@ unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-double Vertex::getDist() const {
-    return this->dist;
+int Vertex::getCost() const {
+    return this->cost;
 }
 
 Edge *Vertex::getPath() const {
@@ -107,8 +103,8 @@ void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-void Vertex::setDist(double dist) {
-    this->dist = dist;
+void Vertex::setCost(int cost) {
+    this->cost = cost;
 }
 
 void Vertex::setPath(Edge *path) {

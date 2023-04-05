@@ -110,7 +110,7 @@ void Menu::mainMenu() {
                 break;
             }
             case '3': {
-                //commandIn = sensitivityMenu();
+                commandIn = failuresMenu();
                 break;
             }
             case 'q': {
@@ -219,6 +219,7 @@ void Menu::extractNetworkFile() {
                 } else {
                     getline(iss, leftover, '"'); //Get leftover string until closing "
                     currentParam.append(leftover);
+                    getline(iss, leftover, ','); //Remove trailing ,
                 }
             }
             switch (counter++) {
@@ -423,4 +424,169 @@ unsigned int Menu::costOptMenu() {
         }
     }
     return commandIn;
+}
+
+/**
+ * Outputs cost optimization menu screen and decides graph function calls according to user input
+ * @return - Last inputted command, or '\0' for previous menu command
+ */
+unsigned int Menu::failuresMenu() {
+    unsigned char commandIn = '\0';
+
+    while (commandIn != 'q') {
+        if (commandIn == '\0') {
+            //Header
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << setfill('-') << right << "LINE FA";
+            cout << setw(COLUMN_WIDTH * COLUMNS_PER_LINE / 2) << left << "ILURES" << endl;
+            cout << setw(COLUMN_WIDTH) << setfill(' ') << "Two specific stations: [1]" << setw(COLUMN_WIDTH)
+                 << "Top affected stations: [2]" << endl;
+            cout << setw(COLUMN_WIDTH) << "Back: [b]" << setw(COLUMN_WIDTH) << "Quit: [q]" << endl;
+        }
+
+        while (commandIn != 'q') {
+            cout << endl
+                 << "Please select how to input the location whose reduced connectivity max number of trains you'd like to check: ";
+            cin >> commandIn;
+
+            if (!checkInput(1)) {
+                commandIn = '\0';
+                continue;
+            }
+            switch (commandIn) {
+                case '1': {
+                    string departureName;
+                    cout << "Enter the name of the departure station: ";
+                    cin >> departureName;
+                    if (!checkInput()) break;
+                    optional<Station> departureStation = dataRepository.findStation(departureName);
+                    if (!departureStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+
+                    string arrivalName;
+                    cout << "Enter the name of the arrival station: ";
+                    cin >> arrivalName;
+                    if (!checkInput()) break;
+                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
+                    if (!arrivalStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+
+                    edgeFailureMenu(); //TODO Do something with this return value
+
+                    cout /*<< graph.edmondsKarp(departureName, arrivalName) TODO: Deactivated edges edmonds karp*/
+                            << " trains can simultaneously travel between "
+                            << departureName
+                            << " and " << arrivalName << "." << endl;
+                    break;
+                }
+                case 'b': {
+                    return '\0';
+                }
+                case 'q': {
+                    cout << "Thank you for using our Railway Network Management System!" << endl;
+                    break;
+                }
+                default:
+                    cout << "Please press one of listed keys." << endl;
+                    break;
+            }
+        }
+    }
+    return commandIn;
+}
+
+
+/**
+ * Outputs edge failure selection menu screen and returns a vector containing all the select edges for the given inputs
+ * @return - vector<Edge*> containing all the Edges to be deactivated
+ *
+ */
+vector<Edge *> Menu::edgeFailureMenu() {
+    unsigned char commandIn;
+    vector<Edge *> edges;
+
+    cout << setw(COLUMN_WIDTH) << setfill(' ') << "Random rails: [1]" << setw(COLUMN_WIDTH)
+         << "Specific rails: [2]" << endl;
+
+    while (true) {
+        cout << "Please select the rails you'd like to deactivate: ";
+        cin >> commandIn;
+
+        if (!checkInput(1)) {
+            continue;
+        }
+        switch (commandIn) {
+            case '1': {
+                unsigned int numEdges;
+                cout << "Please enter how many rails you'd like to deactivate: ";
+                cin >> numEdges;
+                if (!checkInput()) break;
+                if (numEdges > graph.getNumEdges()) {
+                    cout << "The network doesn't contain that many rails." << endl;
+                    break;
+                }
+                cout << "Deactivating the following rails: " << endl;
+                /*for (Edge *e: result.first) {
+                    e->print();
+                }*/
+                return {}; //TODO Fragility edmonds karp
+            }
+            case '2': {
+                vector<Edge *> deactivatedEdges;
+
+                while (true) {
+                    string departureName;
+                    cout << "Enter the name of the departure station, or q to finish: ";
+                    cin >> departureName;
+                    if (!checkInput()) break;
+
+                    if (departureName == "q") break;
+
+                    optional<Station> departureStation = dataRepository.findStation(departureName);
+                    if (!departureStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+
+                    string arrivalName;
+                    cout << "Enter the name of the arrival station, or q to finish: ";
+                    cin >> arrivalName;
+                    if (!checkInput()) break;
+
+                    if (arrivalName == "q") break;
+
+                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
+                    if (!arrivalStation.has_value()) {
+                        stationDoesntExist();
+                        break;
+                    }
+
+                    Vertex *departureVertex = graph.findVertex(departureName);
+                    auto currentEdge = std::find_if(departureVertex->getAdj().begin(),
+                                                    departureVertex->getAdj().end(),
+                                                    [arrivalName](Edge *e) {
+                                                        return e->getDest()->getId() == arrivalName;
+                                                    });
+
+                    if (currentEdge == departureVertex->getAdj().end()) {
+                        cout << "The two stations specified are not directly connected!" << endl;
+                        break;
+                    } else deactivatedEdges.push_back(*currentEdge);
+                }
+
+                cout << "Deactivating the following rails: " << endl;
+                for (Edge *e: deactivatedEdges) {
+                    e->print();
+                }
+
+                return {}; //TODO Fragility edmonds karp
+            }
+            default:
+                cout << "Please press one of listed keys." << endl;
+                break;
+        }
+    }
 }
