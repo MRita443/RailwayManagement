@@ -107,7 +107,7 @@ unsigned int Graph::edmondsKarp(const int &source, const int &target) {
         augmentPath(source, target, findBottleneck(source, target));
     }
 
-    for(Edge* edge : vertexSet[target]->getIncoming()){
+    for(Edge* edge : findVertex(target)->getIncoming()){
         maxFlow += edge->getFlow();
     }
 
@@ -223,7 +223,7 @@ void Graph::augmentPath(const int &source, const int &target, const double &valu
 
 /**
  * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
- * Time Complexity: O(VE)
+ * Time Complexity: O(|VE|)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
  */
@@ -248,7 +248,7 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
 
 /**
  * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to false
- * Time Complexity: O(N)
+ * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be deactivated
  * @return A vector of pointers for all edges that were deactivated
  */
@@ -262,7 +262,7 @@ std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
 
 /**
  * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to true
- * Time Complexity: O(N)
+ * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be activated
  */
 void Graph::activateEdges(std::vector<Edge *> edges) {
