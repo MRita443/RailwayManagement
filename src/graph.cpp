@@ -254,15 +254,15 @@ void Graph::visitedDFS(Vertex *source) {
 
 /**
  * Finds the pairs of stations with max Max-Flow
- * Time Complexity: O(V^2*(VE^2)) //TODO someone check if V^2 is the correct ammount of times EdmondsKarp is called
+ * Time Complexity: O(|V^3|*|E^2|)
  * @return
  */
 std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculateNetworkMaxFlow() {
     unsigned int max = -1;
     std::list<std::pair<Vertex *,Vertex *>> stationList;
     for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++){
-        for (auto itV2 = itV1; itV2 < vertexSet.end(); itV2++){
-            Vertex * v1 = *itV1++;
+        for (auto itV2 = (itV1+1); itV2 < vertexSet.end(); itV2++){
+            Vertex * v1 = *itV1;
             Vertex * v2 = *itV2;
             for (Vertex *aux : vertexSet) aux->setVisited(false);
             visitedDFS(v1);
