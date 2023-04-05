@@ -27,9 +27,9 @@ protected:
 
     void visitedDFS(Vertex *source);
 
-    [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
+    [[nodiscard]] double findBottleneck(const std::string &target) const;
 
-    void augmentPath(const std::string &source, const std::string &target, const double &value) const;
+    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
