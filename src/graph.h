@@ -40,11 +40,13 @@ class Graph {
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
+    
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
 
     std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
     [[nodiscard]] unsigned int getNumEdges() const;
-
+    
     static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
 
     void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
@@ -63,6 +65,8 @@ class Graph {
 
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
+
+    unsigned int getNumEdges();
 };
 
 
