@@ -217,7 +217,7 @@ void Graph::augmentPath(const std::string &source, const std::string &target, co
 
 /**
  * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
  */
@@ -320,4 +320,14 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
     }
 
     return eol_stations;
+}
+
+std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges){
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
+    unsigned int baseFlow = edmondsKarp(/*Supersource to node to be measured*/);
+    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, /*Supersource to node to be measured*/);
+    unsigned int absoluteDifference = baseFlow - reducedFlow;
+    float relativeDifference = (absoluteDifference/baseFlow)*100;
+    stationResults = {vertexID, {absoluteDifference, relativeDifference}};
+    return stationResults;
 }
