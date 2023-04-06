@@ -11,6 +11,7 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <list>
 
 #include "vertex.h"
 #include "station.h"
@@ -54,7 +55,7 @@ public:
 
     std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges);
 
-    std::vector<Vertex*> superSourceCreator(std::string vertexId);
+    std::list<Vertex*> superSourceCreator(std::string vertexId);
 };
 
 

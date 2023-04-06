@@ -296,7 +296,7 @@ unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedE
 }
 
 /**
-* Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
+ * Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
  * Time Complexity: O(|V|+|E|)
  * @param stationId - Id of the starting station
 */
@@ -322,9 +322,16 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
     return eol_stations;
 }
 
+/**
+ * Calculates the max flow of a station normally, and once again with certain edges deactivated, and returns a pair with the name of the station and the difference between normal flow and reduced flow
+ * Time Complexity: O(|VE²|)
+ * @param vertexID - ID of the station to have it's flow measured
+ * @param edges - Edges to be deactivated
+ * @return A Pair with the name of the station first, and a pair with the absolute and relative difference second
+ */
 std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges){
     std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
-    std::vector<Vertex*> superSource = superSourceCreator(vertexID);
+    std::list<Vertex*> superSource = superSourceCreator(vertexID);
     unsigned int baseFlow = edmondsKarp(superSource, vertexID);
     unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID);
     unsigned int absoluteDifference = baseFlow - reducedFlow;
@@ -333,8 +340,14 @@ std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDiff
     return stationResults;
 }
 
-std::vector<Vertex*> Graph::superSourceCreator(std::string vertexId) {
-    std::vector<Vertex*> superSource = vertexSet;
+/**
+ * Creates a list with every vertex except the one selected in the function
+ * Time Complexity: O(V)
+ * @param vertexId - Vertex to be excluded from the list
+ * @return A list with every vertex except the selected one
+ */
+std::list<Vertex*> Graph::superSourceCreator(std::string vertexId) {
+    std::list<Vertex*> superSource(vertexSet.begin(), vertexSet.end());
     Vertex* currentVertex = findVertex(vertexId);
     std::remove(superSource.begin(), superSource.end(), currentVertex);
     return superSource;
