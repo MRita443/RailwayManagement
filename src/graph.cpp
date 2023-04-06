@@ -324,10 +324,18 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string stationId) const {
 
 std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges){
     std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
-    unsigned int baseFlow = edmondsKarp(/*Supersource to node to be measured*/);
-    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, /*Supersource to node to be measured*/);
+    std::vector<Vertex*> superSource = superSourceCreator(vertexID);
+    unsigned int baseFlow = edmondsKarp(superSource, vertexID);
+    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID);
     unsigned int absoluteDifference = baseFlow - reducedFlow;
     float relativeDifference = (absoluteDifference/baseFlow)*100;
     stationResults = {vertexID, {absoluteDifference, relativeDifference}};
     return stationResults;
+}
+
+std::vector<Vertex*> Graph::superSourceCreator(std::string vertexId) {
+    std::vector<Vertex*> superSource = vertexSet;
+    Vertex* currentVertex = findVertex(vertexId);
+    std::remove(superSource.begin(), superSource.end(), currentVertex);
+    return superSource;
 }

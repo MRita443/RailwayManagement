@@ -53,6 +53,8 @@ public:
     unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::string &source, const std::string &target);
 
     std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges);
+
+    std::vector<Vertex*> superSourceCreator(std::string vertexId);
 };
 
 
