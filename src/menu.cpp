@@ -284,7 +284,7 @@ unsigned int Menu::serviceMetricsMenu() {
                 case '1': {
                     string departureName;
                     cout << "Enter the name of the departure station: ";
-                    cin >> departureName;
+                    getline(cin, departureName);
                     if (!checkInput()) break;
                     optional<Station> departureStation = dataRepository.findStation(departureName);
                     if (!departureStation.has_value()) {
@@ -294,39 +294,41 @@ unsigned int Menu::serviceMetricsMenu() {
 
                     string arrivalName;
                     cout << "Enter the name of the arrival station: ";
-                    cin >> arrivalName;
+                    getline(cin, arrivalName);
                     if (!checkInput()) break;
                     optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
                     if (!arrivalStation.has_value()) {
                         stationDoesntExist();
                         break;
                     }
-                    cout /*<< graph.edmondsKarp(departureName, arrivalName) TODO: Change Edmonds-Karp return type*/
-                            << " trains can simultaneously travel between "
-                            << departureName
-                            << " and " << arrivalName << "." << endl;
+                    cout << graph.edmondsKarp({departureName}, arrivalName)
+                         << " trains can simultaneously travel between "
+                         << departureName
+                         << " and " << arrivalName << "." << endl;
                     break;
                 }
                 case '2': {
-                    pair<list<pair<Station, Station>>, unsigned int> result; //= TODO: Edmonds-Karp through all pairs of stations
-                    for (const pair<Station, Station> &p: result.first) {
+                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow();
+
+                    for (const pair<string, string> &p: result.first) {
                         cout << result.second << " trains can simultaneously travel between "
-                             << p.first.getName() << " and " << p.second.getName() << "." << endl;
+                             << p.first << " and " << p.second << "." << endl;
                     }
                     break;
                 }
                 case '3': {
-                    string departureName;
+                    string arrivalName;
                     cout << "Enter the name of the departure station: ";
-                    cin >> departureName;
+                    getline(cin, arrivalName);
                     if (!checkInput()) break;
-                    optional<Station> departureStation = dataRepository.findStation(departureName);
+                    optional<Station> departureStation = dataRepository.findStation(arrivalName);
                     if (!departureStation.has_value()) {
                         stationDoesntExist();
                         break;
                     }
-                    cout << /*graph. TODO: Multi-source Edmonds-Karp<<*/ " trains can simultaneously arrive at "
-                         << departureName << "." << endl;
+                    cout
+                            << /*graph.edmondsKarp(graph.get,arrivalName) TODO: Super-source list of vertexes*/" trains can simultaneously arrive at "
+                            << arrivalName << "." << endl;
                     break;
                 }
                 case '4': {
@@ -386,7 +388,7 @@ unsigned int Menu::costOptMenu() {
                 case '1': {
                     string departureName;
                     cout << "Enter the name of the departure station: ";
-                    cin >> departureName;
+                    getline(cin, departureName);
                     if (!checkInput()) break;
                     optional<Station> departureStation = dataRepository.findStation(departureName);
                     if (!departureStation.has_value()) {
@@ -396,7 +398,7 @@ unsigned int Menu::costOptMenu() {
 
                     string arrivalName;
                     cout << "Enter the name of the arrival station: ";
-                    cin >> arrivalName;
+                    getline(cin, arrivalName);
                     if (!checkInput()) break;
                     optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
                     if (!arrivalStation.has_value()) {
@@ -456,7 +458,7 @@ unsigned int Menu::failuresMenu() {
                 case '1': {
                     string departureName;
                     cout << "Enter the name of the departure station: ";
-                    cin >> departureName;
+                    getline(cin, departureName);
                     if (!checkInput()) break;
                     optional<Station> departureStation = dataRepository.findStation(departureName);
                     if (!departureStation.has_value()) {
@@ -466,7 +468,7 @@ unsigned int Menu::failuresMenu() {
 
                     string arrivalName;
                     cout << "Enter the name of the arrival station: ";
-                    cin >> arrivalName;
+                    getline(cin, arrivalName);
                     if (!checkInput()) break;
                     optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
                     if (!arrivalStation.has_value()) {
@@ -540,7 +542,7 @@ vector<Edge *> Menu::edgeFailureMenu() {
                 while (true) {
                     string departureName;
                     cout << "Enter the name of the departure station, or q to finish: ";
-                    cin >> departureName;
+                    getline(cin, departureName);
                     if (!checkInput()) break;
 
                     if (departureName == "q") break;
@@ -553,7 +555,7 @@ vector<Edge *> Menu::edgeFailureMenu() {
 
                     string arrivalName;
                     cout << "Enter the name of the arrival station, or q to finish: ";
-                    cin >> arrivalName;
+                    getline(cin, arrivalName);
                     if (!checkInput()) break;
 
                     if (arrivalName == "q") break;

@@ -10,7 +10,7 @@ Vertex *Edge::getDest() const {
     return this->dest;
 }
 
-double Edge::getCapacity() const {
+unsigned int Edge::getCapacity() const {
     return this->capacity;
 }
 
@@ -30,7 +30,7 @@ bool Edge::isSelected() const {
     return this->selected;
 }
 
-unsigned int *Edge::getFlow() const {
+unsigned int Edge::getFlow() const {
     return flow;
 }
 
@@ -46,14 +46,14 @@ void Edge::setService(Service service) {
     Edge::service = service;
 }
 
-void Edge::setFlow(unsigned int *flow) {
+void Edge::setFlow(unsigned int flow) {
     this->flow = flow;
-}
-
-void Edge::setFlowValue(unsigned int flow) {
-    *(this->flow) = flow;
 }
 
 void Edge::print() const {
     std::cout << orig->getId() << " <-> " << dest->getId() << std::endl;
+}
+
+void Edge::setCapacity(unsigned int capacity) {
+    Edge::capacity = capacity;
 }

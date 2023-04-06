@@ -7,11 +7,12 @@
 
 class Vertex;
 
+#include <memory>
 #include "vertex.h"
 
 #define INF std::numeric_limits<double>::max()
 
-enum Service: unsigned int {
+enum Service : unsigned int {
     STANDARD = 0,
     ALFA_PENDULAR = 1
 };
@@ -22,7 +23,7 @@ public:
 
     [[nodiscard]] Vertex *getDest() const;
 
-    [[nodiscard]] double getCapacity() const;
+    [[nodiscard]] unsigned int getCapacity() const;
 
     [[nodiscard]] bool isSelected() const; //isOpen
 
@@ -32,7 +33,7 @@ public:
 
     [[nodiscard]] Service getService() const;
 
-    [[nodiscard]] unsigned int *getFlow() const;
+    [[nodiscard]] unsigned int getFlow() const;
 
     void setSelected(bool selected);
 
@@ -40,15 +41,15 @@ public:
 
     void setService(Service service);
 
-    void setFlow(unsigned int *flow);
+    void setFlow(unsigned int flow);
 
-    void setFlowValue(unsigned int flow);
+    void setCapacity(unsigned int capacity);
 
     void print() const;
 
 protected:
     Vertex *dest; // destination vertex
-    double capacity; // edge capacity
+    unsigned int capacity; // edge capacity
     Service service;
 
     // auxiliary fields
@@ -58,7 +59,7 @@ protected:
     Vertex *orig;
     Edge *reverse = nullptr;
 
-    unsigned int *flow; // for flow-related problems
+    unsigned int flow; // for flow-related problems
 };
 
 

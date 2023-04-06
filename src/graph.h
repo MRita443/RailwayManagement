@@ -25,17 +25,13 @@ protected:
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
-    bool path(const std::list<std::string> &source, const std::string &target);
-
     void visitedDFS(Vertex *source);
-
-    [[nodiscard]] double findBottleneck(const std::string &target) const;
-
-    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
 public:
+    Graph();
+
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
 
     bool addVertex(const std::string &id);
@@ -46,14 +42,22 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
-
     unsigned int incomingFlux(const std::string &station);
 
     std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> calculateNetworkMaxFlow();
 
-    unsigned int getNumEdges();
+    unsigned int getNumEdges() const;
 
+    static Edge *getCorrespondingEdge(Edge *e, Graph &residualGraph);
+
+
+    void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
+
+    unsigned int findBottleneck(const std::string &target) const;
+
+    bool path(const std::list<std::string> &source, const std::string &target, Graph &regularGraph);
+
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
 };
 
 
