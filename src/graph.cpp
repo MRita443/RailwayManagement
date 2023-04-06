@@ -67,7 +67,7 @@ bool Graph::addVertex(const std::string &id) {
  * @param service - Service of the Edge to be added
  * @return True if successful, and false if the source or destination vertices do not exist
  */
-bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) {
+bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
@@ -87,18 +87,18 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  * Time Complexity: O(|VE²|)
  * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
  * @return unsigned int representing computed value of max flow
  */
-unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
+unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
+
 
     for (Vertex const *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
+            getCorrespondingEdge(e, residualGraph)->setCapacity(e->getCapacity());
         }
     }
-
-    // Create a residual graph as a copy of the original graph
-    Graph residualGraph(*this);
 
     // Initialize the maximum flow to 0
     unsigned int maxFlow = 0;
@@ -250,7 +250,8 @@ void Graph::visitedDFS(Vertex *source) {
  * Time Complexity: O(|V³|*|E²|)
  * @return A pair consisting of a list of pairs, the stations with max-flow, and an unsigned int of the value of the max flow between them
  */
-std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> Graph::calculateNetworkMaxFlow() {
+std::pair<std::list<std::pair<std::string, std::string>>, unsigned int>
+Graph::calculateNetworkMaxFlow(Graph &residualGraph) {
     unsigned int max = 0;
     std::list<std::pair<std::string, std::string>> stationList;
     for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++) {
@@ -260,7 +261,7 @@ std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> Graph::c
             for (Vertex *aux: vertexSet) aux->setVisited(false);
             visitedDFS(v1);
             if (v2->isVisited()) {
-                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId());
+                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId(), residualGraph);
                 if (itFlow == max) stationList.emplace_back(v1->getId(), v2->getId());
                 if (itFlow > max) {
                     max = itFlow;
@@ -278,7 +279,7 @@ std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> Graph::c
  * @param station - Vertex's ID
  * @return Max flow that can arrive at the given vertex from all the network
  */
-unsigned int Graph::incomingFlux(const std::string &station) {
+unsigned int Graph::incomingFlux(const std::string &station, Graph &residualGraph) {
     std::list<std::string> super_source = findEndOfLines(station);
     for (auto it = super_source.begin(); it != super_source.end(); it++)
         if (*it == station) {
@@ -286,7 +287,7 @@ unsigned int Graph::incomingFlux(const std::string &station) {
             break;
         }
 
-    return edmondsKarp(findEndOfLines(station), station);
+    return edmondsKarp(findEndOfLines(station), station, residualGraph);
 }
 
 /**
@@ -299,7 +300,7 @@ unsigned int Graph::incomingFlux(const std::string &station) {
 Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
     auto adjList = graph.findVertex(e->getOrig()->getId())->getAdj();
     for (Edge *r: adjList) {
-        if (r->getDest() == e->getDest())
+        if (r->getDest()->getId() == e->getDest()->getId())
             return r;
     }
     return nullptr;

@@ -19,6 +19,8 @@
 
 class Graph {
   private:
+    Graph(Graph &g);
+
     unsigned int numEdges;
     std::vector<Vertex *> vertexSet;    // vertex set
 
@@ -30,15 +32,15 @@ class Graph {
     bool addVertex(const std::string &id);
 
     [[nodiscard]] bool
-    addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service);
+    addBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    unsigned int incomingFlux(const std::string &station);
+    unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
 
-    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow();
+    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
     [[nodiscard]] unsigned int getNumEdges() const;
 
@@ -48,7 +50,7 @@ class Graph {
 
     [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
 
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
@@ -57,6 +59,8 @@ class Graph {
     [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
+
+    std::vector<std::pair<Vertex *, Vertex *>> findVerticesWithMaxFlow(Graph &residualGraph);
 };
 
 

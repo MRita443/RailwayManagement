@@ -180,6 +180,7 @@ void Menu::extractStationsFile() {
                 }
                 if (counter == 0) {
                     if (!graph.addVertex(name)) break;
+                    if (!residualGraph.addVertex(name)) break;
                     Station newStation = dataRepository.addStationEntry(name, district, municipality, township, line);
                     dataRepository.addStationToMunicipalityEntry(municipality, newStation);
                     dataRepository.addStationToDistrictEntry(district, newStation);
@@ -246,6 +247,10 @@ void Menu::extractNetworkFile() {
                     cout << "An error occurred. Please try again" << endl;
                     return;
                 }
+                if (!residualGraph.addBidirectionalEdge(sourceName, targetName, capacity, service)) {
+                    cout << "An error occurred. Please try again" << endl;
+                    return;
+                }
             }
         }
     }
@@ -301,15 +306,14 @@ unsigned int Menu::serviceMetricsMenu() {
                         stationDoesntExist();
                         break;
                     }
-                    cout << graph.edmondsKarp({departureName}, arrivalName)
+                    cout << graph.edmondsKarp({departureName}, arrivalName, residualGraph)
                          << " trains can simultaneously travel between "
                          << departureName
                          << " and " << arrivalName << "." << endl;
                     break;
                 }
                 case '2': {
-                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow();
-
+                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow(residualGraph);
                     for (const pair<string, string> &p: result.first) {
                         cout << result.second << " trains can simultaneously travel between "
                              << p.first << " and " << p.second << "." << endl;

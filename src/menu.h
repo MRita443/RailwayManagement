@@ -18,6 +18,7 @@
 
 class Menu {
 private:
+    Graph residualGraph;
     Graph graph;
     DataRepository dataRepository;
     std::string static const stationsFilePath;
