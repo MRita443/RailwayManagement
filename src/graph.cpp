@@ -87,12 +87,12 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
 }
 
 /**
- * Standard Edmonds-Karp algorithm to find the the network's max flow
+ * Single-source or Multi-source Edmonds-Karp algorithm to find the the network's max flow
  * Time Complexity: O(|VE²|)
- * @param source - Id of the source Vertex
+ * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
  */
-void Graph::edmondsKarp(const std::string &source, const std::string &target) {
+unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlowValue(0);
@@ -102,16 +102,17 @@ void Graph::edmondsKarp(const std::string &source, const std::string &target) {
     while (path(source, target)) {
         augmentPath(target, findBottleneck(target));
     }
+    return 0;
 }
 
 /**
  * Adapted BFS (to use residual graph edges) that checks if there is a valid path connecting the source and target vertices
  * Time Complexity: O(|E|)
- * @param source - Id of the source Vertex
+ * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
  * @return True if a path was found, false if not
  */
-bool Graph::path(const std::string &source, const std::string &target) {
+bool Graph::path(const std::list<std::string> &source, const std::string &target) {
 
     for (Vertex *v: vertexSet) {
         v->setVisited(false);
@@ -119,8 +120,10 @@ bool Graph::path(const std::string &source, const std::string &target) {
     }
 
     std::queue<std::string> q;
-    q.push(source);
-    findVertex(source)->setVisited(true);
+    for (const auto & it : source) {
+        q.push(it);
+        findVertex(it)->setVisited(true);
+    }
 
     while (!q.empty()) {
         Vertex *currentVertex = findVertex(q.front());
@@ -181,6 +184,7 @@ double Graph::findBottleneck(const std::string &target) const {
     return bottleneck;
 }
 
+
 /**
  * Augments the flow in the path connecting source to target by value units
  * Time Complexity: O(|E|)
@@ -209,11 +213,11 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value) co
 
 /**
 * Finds the stations that are at the end of the indicated station's line (i.e have only connection to one other station)
- * Time Complexity: O(|V|+|E|)
+ * Time Complexity: O(|V+E|)
  * @param stationId - Id of the starting station
 */
-std::vector<Vertex *> Graph::findEndOfLines(const std::string &stationId) const {
-    std::vector<Vertex *> eol_stations;
+std::list<std::string> Graph::findEndOfLines(const std::string& stationId) const {
+    std::list<std::string> eol_stations;
     std::queue<Vertex *> q;
 
     for (Vertex *v: vertexSet) v->setVisited(false);
@@ -223,15 +227,72 @@ std::vector<Vertex *> Graph::findEndOfLines(const std::string &stationId) const 
         Vertex *curr = q.front();
         q.pop();
         curr->setVisited(true);
-        if (curr->getAdj().size() == 1) eol_stations.push_back(curr);
-        for (Edge *e: curr->getAdj()) {
-            if (!e->getDest()->isVisited()) {
+        if (curr->getAdj().size() == 1) eol_stations.push_back(curr->getId());
+        for (Edge *e : curr->getAdj()){
+            if(!e->getDest()->isVisited()){
                 q.push(e->getDest());
             }
         }
     }
 
     return eol_stations;
+}
+
+/**
+ * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
+ * Time Complexity: O(|V|+|E|)
+ * @param source - Vertex where the DFS starts
+ */
+void Graph::visitedDFS(Vertex *source) {
+    source->setVisited(true);
+    for (Edge *e : source->getAdj()){
+        if (!e->getDest()->isVisited()){
+            visitedDFS(e->getDest());
+        }
+    }
+}
+
+/**
+ * Finds the pairs of stations with max Max-Flow
+ * Time Complexity: O(|V^3|*|E^2|)
+ * @return
+ */
+std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> Graph::calculateNetworkMaxFlow() {
+    unsigned int max = -1;
+    std::list<std::pair<std::string,std::string>> stationList;
+    for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++){
+        for (auto itV2 = (itV1+1); itV2 < vertexSet.end(); itV2++){
+            Vertex * v1 = *itV1;
+            Vertex * v2 = *itV2;
+            for (Vertex *aux : vertexSet) aux->setVisited(false);
+            visitedDFS(v1);
+            if (v2->isVisited()){
+                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId());
+                if (itFlow == max) stationList.push_back({v1->getId(),v2->getId()});
+                if (itFlow > max) {
+                    max = itFlow;
+                    stationList = {{v1->getId(),v2->getId()}};
+                }
+            }
+        }
+    }
+    return {stationList, max};
+}
+
+/**
+ * Finds the incoming flux that a certain station can receive (i.e the ammount of trains that can arrive there at the same time)
+ * Time Complexity: O(|VE^2|)
+ * @param station - Station's ID
+ */
+unsigned int Graph::incomingFlux(const std::string &station) {
+    std::list<std::string> super_source = findEndOfLines(station);
+    for (auto it = super_source.begin(); it != super_source.end(); it++)
+        if (*it == station) {
+            super_source.erase(it);
+            break;
+        }
+
+    return edmondsKarp(findEndOfLines(station),station);
 }
 
 /*
@@ -285,4 +346,5 @@ bool Graph::minCostPath(const std::string &source, const std::string &target) {
 
     return false;
 }*/
+
 

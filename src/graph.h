@@ -10,6 +10,8 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <tuple>
+#include <list>
 #include <algorithm>
 
 #include "vertex.h"
@@ -23,13 +25,15 @@ protected:
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
-    bool path(const std::string &source, const std::string &target);
+    bool path(const std::list<std::string> &source, const std::string &target);
+
+    void visitedDFS(Vertex *source);
 
     [[nodiscard]] double findBottleneck(const std::string &target) const;
 
     void augmentPath(const std::string &target, const unsigned int &value) const;
 
-    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string &stationId) const;
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
 public:
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
@@ -42,9 +46,14 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    void edmondsKarp(const std::string &source, const std::string &target);
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
+
+    unsigned int incomingFlux(const std::string &station);
+
+    std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> calculateNetworkMaxFlow();
 
     unsigned int getNumEdges();
+
 };
 
 
