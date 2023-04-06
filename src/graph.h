@@ -45,7 +45,7 @@ public:
     [[nodiscard]] unsigned int getNumVertex() const;
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
-    
+
     unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
 
     unsigned int incomingFlux(const std::string &station);
