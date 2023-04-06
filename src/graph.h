@@ -19,6 +19,8 @@
 
 class Graph {
 protected:
+    unsigned int numEdges;
+
     std::vector<Vertex *> vertexSet;    // vertex set
 
     [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
@@ -38,7 +40,7 @@ public:
 
     bool addVertex(const std::string &id);
 
-    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const;
+    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service);
 
     [[nodiscard]] unsigned int getNumVertex() const;
 
@@ -49,6 +51,9 @@ public:
     unsigned int incomingFlux(const std::string &station);
 
     std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> calculateNetworkMaxFlow();
+
+    unsigned int getNumEdges();
+
 };
 
 

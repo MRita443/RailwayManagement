@@ -2,9 +2,10 @@
 // Created by rita on 28-02-2023.
 //
 
+#include <utility>
 #include "station.h"
 
-#include <utility>
+Station::Station() = default;
 
 Station::Station(std::string name, std::string district, std::string municipality,
                  std::string township,
