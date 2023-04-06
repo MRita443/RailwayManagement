@@ -334,9 +334,7 @@ std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDiff
     std::list<Vertex*> superSource = superSourceCreator(vertexID);
     unsigned int baseFlow = edmondsKarp(superSource, vertexID);
     unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID);
-    unsigned int absoluteDifference = baseFlow - reducedFlow;
-    float relativeDifference = (absoluteDifference/baseFlow)*100;
-    stationResults = {vertexID, {absoluteDifference, relativeDifference}};
+    stationResults = {vertexID, {baseFlow, reducedFlow}};
     return stationResults;
 }
 
