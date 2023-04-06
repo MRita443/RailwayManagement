@@ -4,7 +4,8 @@
 
 #include "edge.h"
 
-Edge::Edge(Vertex *orig, Vertex *dest, double w, Service s) : orig(orig), dest(dest), capacity(w), service(s) {}
+Edge::Edge(Vertex *orig, Vertex *dest, unsigned int capacity, Service service) : orig(orig), dest(dest),
+                                                                                 capacity(capacity), service(service) {}
 
 Vertex *Edge::getDest() const {
     return this->dest;
@@ -34,26 +35,26 @@ unsigned int Edge::getFlow() const {
     return flow;
 }
 
-void Edge::setSelected(bool selected) {
-    this->selected = selected;
+void Edge::setSelected(bool s) {
+    this->selected = s;
 }
 
-void Edge::setReverse(Edge *reverse) {
-    this->reverse = reverse;
+void Edge::setReverse(Edge *r) {
+    this->reverse = r;
 }
 
-void Edge::setService(Service service) {
-    Edge::service = service;
+void Edge::setService(Service s) {
+    Edge::service = s;
 }
 
-void Edge::setFlow(unsigned int flow) {
-    this->flow = flow;
+void Edge::setFlow(unsigned int f) {
+    this->flow = f;
 }
 
 void Edge::print() const {
     std::cout << orig->getId() << " <-> " << dest->getId() << std::endl;
 }
 
-void Edge::setCapacity(unsigned int capacity) {
-    Edge::capacity = capacity;
+void Edge::setCapacity(unsigned int c) {
+    this->capacity = c;
 }
