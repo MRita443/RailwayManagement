@@ -48,7 +48,7 @@ public:
 
     unsigned int incomingFlux(const std::string &station);
 
-    std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> calculateNetworkMaxFlow();
+    std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> calculateNetworkMaxFlow();
 };
 
 

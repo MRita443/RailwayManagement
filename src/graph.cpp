@@ -251,9 +251,9 @@ void Graph::visitedDFS(Vertex *source) {
  * Time Complexity: O(|V^3|*|E^2|)
  * @return
  */
-std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculateNetworkMaxFlow() {
+std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> Graph::calculateNetworkMaxFlow() {
     unsigned int max = -1;
-    std::list<std::pair<Vertex *,Vertex *>> stationList;
+    std::list<std::pair<std::string,std::string>> stationList;
     for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++){
         for (auto itV2 = (itV1+1); itV2 < vertexSet.end(); itV2++){
             Vertex * v1 = *itV1;
@@ -262,10 +262,10 @@ std::pair<std::list<std::pair<Vertex *,Vertex *>>,unsigned int> Graph::calculate
             visitedDFS(v1);
             if (v2->isVisited()){
                 unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId());
-                if (itFlow == max) stationList.push_back({v1,v2});
+                if (itFlow == max) stationList.push_back({v1->getId(),v2->getId()});
                 if (itFlow > max) {
                     max = itFlow;
-                    stationList = {{v1, v2}};
+                    stationList = {{v1->getId(),v2->getId()}};
                 }
             }
         }
