@@ -26,7 +26,7 @@ class Graph {
     std::vector<Vertex *> vertexSet;    // vertex set
     std::unordered_map<std::string, Vertex*> idToVertex;
 
-    //[[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
+    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
     bool path(const std::list<std::string> &source, const std::string &target);
 
@@ -48,9 +48,9 @@ public:
     [[nodiscard]] bool
     addBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
-    //[[nodiscard]] unsigned int getNumVertex() const;
+    [[nodiscard]] unsigned int getNumVertex() const;
 
-    //[[nodiscard]] std::vector<Vertex *> getVertexSet() const;
+    [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     std::vector<Edge*> deactivateEdges(int numEdges);
 

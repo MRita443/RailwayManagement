@@ -6,16 +6,15 @@
 
 
 Graph::Graph() = default;
-/*
+
 unsigned int Graph::getNumVertex() const {
     return (unsigned int) vertexSet.size();
 }
-*/
-/*
+
 std::vector<Vertex *> Graph::getVertexSet() const {
     return vertexSet;
 }
- */
+
 
 unsigned int Graph::getNumEdges() const {
     return numEdges;
@@ -40,17 +39,12 @@ Vertex *Graph::findVertex(const std::string &id) const {
  * @param id - Id of the vertex to be found
  * @return Index of the found Vertex, or -1 if none was found
  */
-/*
+
 unsigned int Graph::findVertexIdx(const std::string &id) const {
-    for (unsigned i = 0; i < vertexSet.size(); i++)
-        if (vertexSet[i]->getId() == id)
-            return i;
-    return -1;
     auto it = idToVertex.find(id);
     if (it == idToVertex.end()) return nullptr;
     return it->second;
 }
-*/
 
 /**
  * Adds a vertex with a given id to the Graph, representing a given station
@@ -241,7 +235,6 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value, Gr
         currentVertex = currentVertex->getPath()->getOrig();
     }
 }
-//change to return void
 
 /**
  * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
