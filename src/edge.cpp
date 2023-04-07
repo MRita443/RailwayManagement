@@ -58,3 +58,11 @@ void Edge::print() const {
 void Edge::setCapacity(unsigned int c) {
     this->capacity = c;
 }
+
+Edge *Edge::getCorrespondingEdge() const {
+    return correspondingEdge;
+}
+
+void Edge::setCorrespondingEdge(Edge *correspondingEdge) {
+    Edge::correspondingEdge = correspondingEdge;
+}

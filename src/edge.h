@@ -16,7 +16,7 @@ enum class Service : unsigned int {
 };
 
 class Edge {
-public:
+  public:
     Edge(Vertex *orig, Vertex *dest, unsigned int w, Service s);
 
     [[nodiscard]] Vertex *getDest() const;
@@ -33,6 +33,8 @@ public:
 
     [[nodiscard]] unsigned int getFlow() const;
 
+    Edge *getCorrespondingEdge() const;
+
     void setSelected(bool s);
 
     void setReverse(Edge *r);
@@ -43,9 +45,11 @@ public:
 
     void setCapacity(unsigned int c);
 
+    void setCorrespondingEdge(Edge *correspondingEdge);
+
     void print() const;
 
-private:
+  private:
     Vertex *orig;
     Vertex *dest; // destination vertex
     unsigned int capacity; // edge capacity
@@ -54,6 +58,9 @@ private:
     // auxiliary fields
     bool selected = true;
     Edge *reverse = nullptr;
+
+    //corresponding edge in the residual/regular graph
+    Edge *correspondingEdge = nullptr;
 
     unsigned int flow = 0; // for flow-related problems
 };

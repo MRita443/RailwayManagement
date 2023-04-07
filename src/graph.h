@@ -23,6 +23,7 @@ class Graph {
 
     unsigned int numEdges;
     std::vector<Vertex *> vertexSet;    // vertex set
+    std::unordered_map<std::string, Vertex*> idToVertex;
 
   public:
     Graph();
@@ -52,8 +53,6 @@ class Graph {
 
     unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
-
     void visitedDFS(Vertex *source);
 
     [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
@@ -61,6 +60,9 @@ class Graph {
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
     std::vector<std::pair<Vertex *, Vertex *>> findVerticesWithMaxFlow(Graph &residualGraph);
+
+    std::pair<Edge *, Edge *>
+    addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 };
 
 

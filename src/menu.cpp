@@ -243,14 +243,14 @@ void Menu::extractNetworkFile() {
                 }
             }
             if (counter == 0) {
-                if (!graph.addBidirectionalEdge(sourceName, targetName, capacity, service)) {
-                    cout << "An error occurred. Please try again" << endl;
-                    return;
-                }
-                if (!residualGraph.addBidirectionalEdge(sourceName, targetName, capacity, service)) {
-                    cout << "An error occurred. Please try again" << endl;
-                    return;
-                }
+                auto [regular, regularReverse] = graph.addAndGetBidirectionalEdge(sourceName, targetName, capacity,
+                                                                                  service);
+                auto [residual, residualReverse] = residualGraph.addAndGetBidirectionalEdge(sourceName, targetName,
+                                                                                            capacity, service);
+                regular->setCorrespondingEdge(residual);
+                regularReverse->setCorrespondingEdge(residualReverse);
+                residual->setCorrespondingEdge(regular);
+                residualReverse->setCorrespondingEdge(regularReverse);
             }
         }
     }
@@ -313,7 +313,8 @@ unsigned int Menu::serviceMetricsMenu() {
                     break;
                 }
                 case '2': {
-                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow(residualGraph);
+                    pair<list<pair<string, string>>, unsigned int> result = graph.calculateNetworkMaxFlow(
+                            residualGraph);
                     for (const pair<string, string> &p: result.first) {
                         cout << result.second << " trains can simultaneously travel between "
                              << p.first << " and " << p.second << "." << endl;

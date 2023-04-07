@@ -20,28 +20,14 @@ unsigned int Graph::getNumEdges() const {
 
 /**
  * Finds the vertex with a given id
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
 Vertex *Graph::findVertex(const std::string &id) const {
-    for (auto v: vertexSet)
-        if (v->getId() == id)
-            return v;
-    return nullptr;
-}
-
-/**
- * Finds the index of the vertex with a given id
- * Time Complexity: O(|V|)
- * @param id - Id of the vertex to be found
- * @return Index of the found Vertex, or -1 if none was found
- */
-unsigned int Graph::findVertexIdx(const std::string &id) const {
-    for (unsigned i = 0; i < vertexSet.size(); i++)
-        if (vertexSet[i]->getId() == id)
-            return i;
-    return -1;
+    auto it = idToVertex.find(id);
+    if (it == idToVertex.end()) return nullptr;
+    return it->second;
 }
 
 /**
@@ -54,6 +40,7 @@ bool Graph::addVertex(const std::string &id) {
     if (findVertex(id) != nullptr)
         return false;
     vertexSet.push_back(new Vertex(id));
+    idToVertex[id] = vertexSet.back();
     return true;
 }
 
@@ -83,6 +70,31 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
 }
 
 /**
+ * Adds and returns a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
+ * Time Complexity: O(|V|)
+ * @param source - Id of the source Vertex
+ * @param dest - Id of the destination Vertex
+ * @param c - Capacity of the Edge to be added
+ * @param service - Service of the Edge to be added
+ * @return Pair containing a pointer to the created Edge and to its reverse
+ */
+std::pair<Edge *, Edge *>
+Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service) {
+    auto v1 = findVertex(source);
+    auto v2 = findVertex(dest);
+    if (v1 == nullptr || v2 == nullptr)
+        return {nullptr, nullptr};
+
+    auto e1 = v1->addEdge(v2, c, service);
+    auto e2 = v2->addEdge(v1, c, service);
+    e1->setReverse(e2);
+    e2->setReverse(e1);
+
+    numEdges++;
+    return {e1, e2};
+}
+
+/**
  * Single-source or Multi-source Edmonds-Karp algorithm to find the the network's max flow
  * Time Complexity: O(|VE²|)
  * @param source - List of ids of the source Vertex(es)
@@ -96,7 +108,7 @@ unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std:
     for (Vertex const *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
-            getCorrespondingEdge(e, residualGraph)->setCapacity(e->getCapacity());
+            e->getCorrespondingEdge()->setCapacity(e->getCapacity()); //Reset residual edge capacity
         }
     }
 
@@ -190,7 +202,7 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value, Gr
     while (currentVertex->getPath() != nullptr) {
         Edge *residualEdge = currentVertex->getPath();
         Edge *reverseResidualEdge = residualEdge->getReverse();
-        Edge *regularEdge = getCorrespondingEdge(residualEdge, regularGraph);
+        Edge *regularEdge = residualEdge->getCorrespondingEdge();
 
         //Augment flow in regular graph
         regularEdge->setFlow(regularEdge->getFlow() + value);
@@ -255,11 +267,11 @@ Graph::calculateNetworkMaxFlow(Graph &residualGraph) {
     unsigned int max = 0;
     std::list<std::pair<std::string, std::string>> stationList;
     for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++) {
-        for (auto itV2 = (itV1 + 1); itV2 < vertexSet.end(); itV2++) {
-            Vertex *v1 = *itV1;
-            Vertex const *v2 = *itV2;
-            for (Vertex *aux: vertexSet) aux->setVisited(false);
-            visitedDFS(v1);
+        Vertex *v1 = *itV1;
+        for (Vertex *aux: vertexSet) aux->setVisited(false);
+        visitedDFS(*itV1);
+        for (auto itV2 = itV1 + 1; itV2 < vertexSet.end(); itV2++) {
+            Vertex *v2 = *itV2;
             if (v2->isVisited()) {
                 unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId(), residualGraph);
                 if (itFlow == max) stationList.emplace_back(v1->getId(), v2->getId());
