@@ -4,9 +4,11 @@
 
 #include "graph.h"
 
+
+Graph::Graph() = default;
 /*
 unsigned int Graph::getNumVertex() const {
-    return vertexSet.size();
+    return (unsigned int) vertexSet.size();
 }
 */
 /*
@@ -15,13 +17,13 @@ std::vector<Vertex *> Graph::getVertexSet() const {
 }
  */
 
-unsigned int Graph::getNumEdges() const{
+unsigned int Graph::getNumEdges() const {
     return numEdges;
 }
 
 /**
  * Finds the vertex with a given id
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the vertex to be found
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
@@ -31,7 +33,6 @@ Vertex *Graph::findVertex(const std::string &id) const {
             return v;
     return nullptr;
 }
-
 
 /**
  * Finds the index of the vertex with a given id
@@ -45,6 +46,9 @@ unsigned int Graph::findVertexIdx(const std::string &id) const {
         if (vertexSet[i]->getId() == id)
             return i;
     return -1;
+    auto it = idToVertex.find(id);
+    if (it == idToVertex.end()) return nullptr;
+    return it->second;
 }
 */
 
@@ -58,6 +62,7 @@ bool Graph::addVertex(const std::string &id) {
     if (findVertex(id) != nullptr)
         return false;
     vertexSet.push_back(new Vertex(id));
+    idToVertex[id] = vertexSet.back();
     return true;
 }
 
@@ -71,24 +76,44 @@ bool Graph::addVertex(const std::string &id) {
  * @param service - Service of the Edge to be added
  * @return True if successful, and false if the source or destination vertices do not exist
  */
-bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) {
+bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
 
-    //Sets each Edge and its reverse to share flow attribute
-    unsigned int sharedFlow = 0;
+    auto e1 = v1->addEdge(v2, c, service);
+    auto e2 = v2->addEdge(v1, c, service);
+    e1->setReverse(e2);
+    e2->setReverse(e1);
+
+    numEdges++;
+    return true;
+}
+
+/**
+ * Adds and returns a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
+ * Time Complexity: O(|V|)
+ * @param source - Id of the source Vertex
+ * @param dest - Id of the destination Vertex
+ * @param c - Capacity of the Edge to be added
+ * @param service - Service of the Edge to be added
+ * @return Pair containing a pointer to the created Edge and to its reverse
+ */
+std::pair<Edge *, Edge *>
+Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service) {
+    auto v1 = findVertex(source);
+    auto v2 = findVertex(dest);
+    if (v1 == nullptr || v2 == nullptr)
+        return {nullptr, nullptr};
 
     auto e1 = v1->addEdge(v2, c, service);
     auto e2 = v2->addEdge(v1, c, service);
     e1->setReverse(e2);
     e2->setReverse(e1);
-    e1->setFlow(&sharedFlow);
-    e2->setFlow(&sharedFlow);
 
     numEdges++;
-    return true;
+    return {e1, e2};
 }
 
 /**
@@ -96,35 +121,49 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
  * Time Complexity: O(|VE²|)
  * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
+ * @return unsigned int representing computed value of max flow
  */
-unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target) {
-    unsigned int maxFlow = 0;
-    for (Vertex *v: vertexSet) {
+
+unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
+    for (Vertex const *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
-            e->setFlowValue(0);
+            e->setFlow(0);
+            e->getCorrespondingEdge()->setCapacity(e->getCapacity()); //Reset residual edge capacity
         }
     }
 
-    while (path(source, target)) {
-        augmentPath(target, findBottleneck(target));
+    // Initialize the maximum flow to 0
+    unsigned int maxFlow = 0;
+
+    while (residualGraph.path(source, target)) {
+
+        // Find the bottleneck capacity of the path
+        unsigned int bottleneckCapacity = residualGraph.findBottleneck(target);
+
+        // Augment the flow by the bottleneck capacity
+        residualGraph.augmentPath(target, bottleneckCapacity, *this);
+
+        // Update the maximum flow with the bottleneck capacity
+        maxFlow += bottleneckCapacity;
     }
 
     for(Edge* edge : findVertex(target)->getIncoming()){
-        unsigned int *currentFlow = edge->getFlow();
-        maxFlow += *currentFlow;
+        unsigned int currentFlow = edge->getFlow();
+        maxFlow += currentFlow;
     }
 
     return maxFlow;
 }
 
 /**
- * Adapted BFS (to use residual graph edges) that checks if there is a valid path connecting the source and target vertices
- * Time Complexity: O(|E|)
+ * Adapted BFS that checks if there is a valid path connecting the source and target vertices. Indicated for use on residual graphs
+ * Time Complexity: O(|V| + |E|)
  * @param source - List of ids of the source Vertex(es)
  * @param target - Id of the target Vertex
  * @return True if a path was found, false if not
  */
-bool Graph::path(const std::list<std::string> &source, const std::string &target) {
+bool Graph::path(const std::list<std::string> &source, const std::string &target) const {
 
     for (Vertex *v: vertexSet) {
         v->setVisited(false);
@@ -132,62 +171,42 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     }
 
     std::queue<std::string> q;
-    for (const auto & it : source) {
+    for (const auto &it: source) {
         q.push(it);
         findVertex(it)->setVisited(true);
     }
 
     while (!q.empty()) {
-        Vertex *currentVertex = findVertex(q.front());
+        Vertex const *currentVertex = findVertex(q.front());
         q.pop();
-
-
         for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && *e->getFlow() < e->getCapacity() && e->isSelected()) {
+            if (!e->getDest()->isVisited() && e->getCapacity() > 0 && e->isSelected()) {
                 q.push(e->getDest()->getId());
                 e->getDest()->setVisited(true);
                 e->getDest()->setPath(e);
                 if (e->getDest()->getId() == target) return true;
             }
         }
-
-        for (Edge *e: currentVertex->getIncoming()) {
-            if (!e->getOrig()->isVisited() && *e->getFlow() > 0 && e->isSelected()) {
-                q.push(e->getOrig()->getId());
-                e->getOrig()->setVisited(true);
-                e->getOrig()->setPath(e);
-                if (e->getOrig()->getId() == target) return true;
-            }
-        }
     }
-
     return false;
 }
+
 
 /**
  * Finds the minimum available flow value in the path connecting source and target vertices
  * Time Complexity: O(|E|)
- * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  * @return Bottleneck of the path connecting source to target
  */
 unsigned int Graph::findBottleneck(const std::string &target) const {
-    Vertex *currentVertex = findVertex(target);
+    Vertex const *currentVertex = findVertex(target);
     unsigned int currBottleneck;
-    unsigned int bottleneck = INF;
+    unsigned int bottleneck = UINT32_MAX;
 
     while (currentVertex->getPath() != nullptr) {
 
-        if (currentVertex->getPath()->getDest() == currentVertex) //Regular Edge
-        {
-            currBottleneck = currentVertex->getPath()->getCapacity() -
-                             *currentVertex->getPath()->getFlow();
-            currentVertex = currentVertex->getPath()->getOrig();
-        } else //Residual Edge (was traversed backwards)
-        {
-            currBottleneck = *currentVertex->getPath()->getFlow();
-            currentVertex = currentVertex->getPath()->getDest();
-        }
+        currBottleneck = currentVertex->getPath()->getCapacity();
+        currentVertex = currentVertex->getPath()->getOrig();
 
         if (currBottleneck < bottleneck) {
             bottleneck = currBottleneck;
@@ -198,27 +217,28 @@ unsigned int Graph::findBottleneck(const std::string &target) const {
 
 
 /**
- * Augments the flow in the path connecting source to target by value units
+ * Augments the flow in the regularGraph path connecting source to target by value units, and updates the residual network. Indicated for use on residual graphs
  * Time Complexity: O(|E|)
- * @param source - Id of the source Vertex
  * @param target - Id of the target Vertex
  * @param value - Number of units to augment the flow by
+ * @param regularGraph - Graph associated with this residual Graph
  */
-void Graph::augmentPath(const std::string &target, const unsigned int &value) const {
-    Vertex *currentVertex = findVertex(target);
+void Graph::augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const {
+    Vertex const *currentVertex = findVertex(target);
 
     while (currentVertex->getPath() != nullptr) {
-        Edge *currentPath = currentVertex->getPath();
+        Edge *residualEdge = currentVertex->getPath();
+        Edge *reverseResidualEdge = residualEdge->getReverse();
+        Edge *regularEdge = residualEdge->getCorrespondingEdge();
 
-        if (currentPath->getDest() == currentVertex) //Regular Edge
-        {
-            currentPath->setFlowValue(*(currentPath->getFlow()) + value);
-            currentVertex = currentVertex->getPath()->getOrig();
+        //Augment flow in regular graph
+        regularEdge->setFlow(regularEdge->getFlow() + value);
 
-        } else { //Residual Edge (was traversed backwards)
-            currentPath->setFlowValue(*(currentPath->getFlow()) - value);
-            currentVertex = currentVertex->getPath()->getDest();
-        }
+        //Update residual Graph edges
+        residualEdge->setCapacity(regularEdge->getCapacity() - regularEdge->getFlow());
+        reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
+
+        currentVertex = currentVertex->getPath()->getOrig();
     }
 }
 //change to return void
@@ -309,7 +329,7 @@ unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedE
  * Time Complexity: O(|V+E|)
  * @param stationId - Id of the starting station
 */
-std::list<std::string> Graph::findEndOfLines(const std::string& stationId) const {
+std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const {
     std::list<std::string> eol_stations;
     std::queue<Vertex *> q;
 
@@ -321,8 +341,8 @@ std::list<std::string> Graph::findEndOfLines(const std::string& stationId) const
         q.pop();
         curr->setVisited(true);
         if (curr->getAdj().size() == 1) eol_stations.push_back(curr->getId());
-        for (Edge *e : curr->getAdj()){
-            if(!e->getDest()->isVisited()){
+        for (Edge const *e: curr->getAdj()) {
+            if (!e->getDest()->isVisited()) {
                 q.push(e->getDest());
             }
         }
@@ -366,8 +386,8 @@ std::list<std::string> Graph::superSourceCreator(std::string vertexId) {
  */
 void Graph::visitedDFS(Vertex *source) {
     source->setVisited(true);
-    for (Edge *e : source->getAdj()){
-        if (!e->getDest()->isVisited()){
+    for (Edge const *e: source->getAdj()) {
+        if (!e->getDest()->isVisited()) {
             visitedDFS(e->getDest());
         }
     }
@@ -375,24 +395,25 @@ void Graph::visitedDFS(Vertex *source) {
 
 /**
  * Finds the pairs of stations with max Max-Flow
- * Time Complexity: O(|V^3|*|E^2|)
- * @return
+ * Time Complexity: O(|V³|*|E²|)
+ * @return A pair consisting of a list of pairs, the stations with max-flow, and an unsigned int of the value of the max flow between them
  */
-std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> Graph::calculateNetworkMaxFlow() {
-    unsigned int max = -1;
-    std::list<std::pair<std::string,std::string>> stationList;
-    for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++){
-        for (auto itV2 = (itV1+1); itV2 < vertexSet.end(); itV2++){
-            Vertex * v1 = *itV1;
-            Vertex * v2 = *itV2;
-            for (Vertex *aux : vertexSet) aux->setVisited(false);
-            visitedDFS(v1);
-            if (v2->isVisited()){
-                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId());
-                if (itFlow == max) stationList.push_back({v1->getId(),v2->getId()});
+std::pair<std::list<std::pair<std::string, std::string>>, unsigned int>
+Graph::calculateNetworkMaxFlow(Graph &residualGraph) {
+    unsigned int max = 0;
+    std::list<std::pair<std::string, std::string>> stationList;
+    for (auto itV1 = vertexSet.begin(); itV1 < vertexSet.end(); itV1++) {
+        Vertex *v1 = *itV1;
+        for (Vertex *aux: vertexSet) aux->setVisited(false);
+        visitedDFS(*itV1);
+        for (auto itV2 = itV1 + 1; itV2 < vertexSet.end(); itV2++) {
+            Vertex *v2 = *itV2;
+            if (v2->isVisited()) {
+                unsigned int itFlow = edmondsKarp({v1->getId()}, v2->getId(), residualGraph);
+                if (itFlow == max) stationList.emplace_back(v1->getId(), v2->getId());
                 if (itFlow > max) {
                     max = itFlow;
-                    stationList = {{v1->getId(),v2->getId()}};
+                    stationList = {{v1->getId(), v2->getId()}};
                 }
             }
         }
@@ -402,10 +423,11 @@ std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> Graph::cal
 
 /**
  * Finds the incoming flux that a certain station can receive (i.e the amount of trains that can arrive there at the same time)
- * Time Complexity: O(|VE^2|)
- * @param station - Station's ID
+ * Time Complexity: O(|VE²|)
+ * @param station - Vertex's ID
+ * @return Max flow that can arrive at the given vertex from all the network
  */
-unsigned int Graph::incomingFlux(const std::string &station) {
+unsigned int Graph::incomingFlux(const std::string &station, Graph &residualGraph) {
     std::list<std::string> super_source = findEndOfLines(station);
     for (auto it = super_source.begin(); it != super_source.end(); it++)
         if (*it == station) {
@@ -413,7 +435,23 @@ unsigned int Graph::incomingFlux(const std::string &station) {
             break;
         }
 
-    return edmondsKarp(findEndOfLines(station),station);
+    return edmondsKarp(findEndOfLines(station), station, residualGraph);
+}
+
+/**
+ * Gets the corresponding Edge to e in the passed graph, i.e. the Edge with the same origin and destiny
+ * Time Complexity: O(|Vg| + |Eg|), where Vg is the number of vertices and Eg is the number of edges in the parameter graph
+ * @param e - Pointer to the Edge whose correspondent is to be found
+ * @param graph - Graph in which the corresponding Edge should be found
+ * @return Pointer to the found Edge, or nullptr if no such Ede was found in the parameter graph
+ */
+Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
+    auto adjList = graph.findVertex(e->getOrig()->getId())->getAdj();
+    for (Edge *r: adjList) {
+        if (r->getDest()->getId() == e->getDest()->getId())
+            return r;
+    }
+    return nullptr;
 }
 
 /*
