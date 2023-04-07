@@ -11,9 +11,9 @@ class Vertex;
 
 #define INF std::numeric_limits<double>::max()
 
-enum Service {
-    STANDARD,
-    ALFA_PENDULAR
+enum Service: unsigned int {
+    STANDARD = 0,
+    ALFA_PENDULAR = 1
 };
 
 class Edge {
@@ -32,7 +32,7 @@ public:
 
     [[nodiscard]] Service getService() const;
 
-    [[nodiscard]] unsigned int* getFlow() const;
+    [[nodiscard]] unsigned int *getFlow() const;
 
     void setSelected(bool selected);
 
@@ -41,12 +41,14 @@ public:
     void setService(Service service);
 
     void setFlow(unsigned int *flow);
-    
+
     void setFlowValue(unsigned int flow);
+
+    void print() const;
 
 protected:
     Vertex *dest; // destination vertex
-    double capacity; // edge capacity
+    unsigned int capacity; // edge capacity
     Service service;
 
     // auxiliary fields

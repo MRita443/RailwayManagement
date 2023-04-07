@@ -5,8 +5,6 @@
 #ifndef RAILWAYMANAGEMENT_VERTEX_H
 #define RAILWAYMANAGEMENT_VERTEX_H
 
-class Edge;
-
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -16,11 +14,12 @@ class Edge;
 
 #define INF std::numeric_limits<double>::max()
 
+class Edge;
+enum Service: unsigned int;
+
 class Vertex {
 public:
     explicit Vertex(std::string id);
-
-    bool operator<(Vertex &vertex) const; // // required by MutablePriorityQueue
 
     [[nodiscard]] std::string getId() const;
 
@@ -32,7 +31,7 @@ public:
 
     [[nodiscard]] unsigned int getIndegree() const;
 
-    [[nodiscard]] double getDist() const;
+    [[nodiscard]] int getCost() const;
 
     [[nodiscard]] Edge *getPath() const;
 
@@ -46,7 +45,7 @@ public:
 
     void setIndegree(unsigned int indegree);
 
-    void setDist(double dist);
+    void setCost(int dist);
 
     void setPath(Edge *path);
 
@@ -64,7 +63,7 @@ protected:
     bool visited = false; // used by DFS, BFS, Prim ...
     bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
-    double dist = 0;
+    int cost;
     Edge *path = nullptr;
 
     std::vector<Edge *> incoming; // incoming edges

@@ -28,11 +28,11 @@ private:
 public:
     Menu();
 
-    bool extractStationsFile();
+    void extractStationsFile();
 
-    bool extractNetworkFile();
+    void extractNetworkFile();
 
-    bool extractFileInfo();
+    void extractFileInfo();
 
     void initializeMenu();
 
@@ -40,9 +40,11 @@ public:
 
     unsigned int costOptMenu();
 
-    unsigned int sensitivityMenu();
+    unsigned int failuresMenu();
 
     void mainMenu();
+
+    std::vector<Edge *> edgeFailureMenu();
 
     static bool checkInput(unsigned int checkLength = 0);
 

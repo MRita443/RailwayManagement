@@ -17,6 +17,8 @@ private:
     std::string township;
     std::string line;
 public:
+    Station();
+
     Station(std::string name, std::string district, std::string municipality,
             std::string township,
             std::string line);

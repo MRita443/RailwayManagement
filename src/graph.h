@@ -10,6 +10,8 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <tuple>
+#include <list>
 #include <algorithm>
 #include <list>
 
@@ -18,44 +20,55 @@
 
 class Graph {
 protected:
+    unsigned int numEdges;
+
     std::vector<Vertex *> vertexSet;    // vertex set
 
-    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
+    //[[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
 
-    bool path(const std::string &source, const std::string &target);
+    bool path(const std::list<std::string> &source, const std::string &target);
 
-    [[nodiscard]] double findBottleneck(const std::string &source, const std::string &target) const;
+    void visitedDFS(Vertex *source);
 
-    void augmentPath(const std::string &source, const std::string &target, const double &value) const;
+    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
 
-    [[nodiscard]] std::vector<Vertex *> findEndOfLines(const std::string stationId) const;
+    void augmentPath(const std::string &target, const unsigned int &value) const;
+
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
 public:
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
 
     bool addVertex(const std::string &id);
 
-    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service) const;
+    [[nodiscard]] bool addBidirectionalEdge(const std::string &source, const std::string &dest, double c, Service service);
 
-    [[nodiscard]] unsigned int getNumVertex() const;
+    //[[nodiscard]] unsigned int getNumVertex() const;
 
-    [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
+    //[[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    unsigned int edmondsKarp(const std::string &source, const std::string &target);
-
-    std::vector<Edge*> deactivateEdges(int i);
+    std::vector<Edge*> deactivateEdges(int numEdges);
 
     std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
 
     void activateEdges(std::vector<Edge*> Edges);
 
-    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::string &source, const std::string &target);
+    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target);
 
-    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::string &source, const std::string &target);
+    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target);
 
     std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges);
 
-    std::list<Vertex*> superSourceCreator(std::string vertexId);
+    std::list<std::string> superSourceCreator(std::string vertexId);
+
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
+
+    unsigned int incomingFlux(const std::string &station);
+
+    std::pair<std::list<std::pair<std::string,std::string>>,unsigned int> calculateNetworkMaxFlow();
+
+    unsigned int getNumEdges() const;
+
 };
 
 
