@@ -63,6 +63,10 @@ class Graph {
 
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
+
+    bool dijkstraPath(const std::list<std::string> &source, const std::string &target) const;
+
+    bool dijkstraPath(const std::string &source, const std::string &target) const;
 };
 
 

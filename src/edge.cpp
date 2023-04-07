@@ -35,6 +35,10 @@ unsigned int Edge::getFlow() const {
     return flow;
 }
 
+unsigned int Edge::getCost() const {
+    return service == Service::STANDARD ? 2 : 4;
+}
+
 void Edge::setSelected(bool s) {
     this->selected = s;
 }

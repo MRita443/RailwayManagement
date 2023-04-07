@@ -33,6 +33,8 @@ class Edge {
 
     [[nodiscard]] unsigned int getFlow() const;
 
+    [[nodiscard]] unsigned int getCost() const;
+
     Edge *getCorrespondingEdge() const;
 
     void setSelected(bool s);

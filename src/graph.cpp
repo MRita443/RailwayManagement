@@ -164,6 +164,37 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     return false;
 }
 
+bool Graph::dijkstraPath(const std::string &source, const std::string &target) const {
+
+    auto increasingCost = [](Vertex *a, Vertex *b) { return a->getCost() < b->getCost(); };
+    std::priority_queue<Vertex *, std::vector<Vertex*>, decltype(increasingCost)> pq(increasingCost);
+
+    for (Vertex *v: vertexSet) {
+        v->setVisited(false);
+        v->setPath(nullptr);
+        v->setCost(INT32_MAX);
+        pq.push(v);
+    }
+
+    findVertex(source)
+
+    while (!q.empty()) {
+        Vertex const *currentVertex = findVertex(q.front());
+        q.pop();
+        for (Edge *e: currentVertex->getAdj()) {
+            if (!e->getDest()->isVisited() && e->getCapacity() > 0 && e->isSelected()) {
+                q.push(e->getDest()->getId());
+                e->getDest()->setVisited(true);
+                e->getDest()->setPath(e);
+                if (e->getDest()->getId() == target) return true;
+            }
+        }
+    }
+    return false;
+
+    return false;
+}
+
 
 /**
  * Finds the minimum available flow value in the path connecting source and target vertices
