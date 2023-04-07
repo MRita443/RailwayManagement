@@ -62,7 +62,16 @@ class Graph {
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
-    bool bellmanFord(std::string &source, const std::string &target);
+    std::pair<unsigned int, unsigned int>
+    minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
+
+    std::list<Edge *> bellmanFord(const std::string &source, const std::string &target);
+
+    unsigned int findListBottleneck(std::list<Edge *> edges) const;
+
+    void makeMinCostResidual(Graph &minCostResidual);
+
+    void augmentMinCostPath(std::list<Edge *> edges, const unsigned int &value) const;
 };
 
 

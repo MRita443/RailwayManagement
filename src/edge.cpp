@@ -4,8 +4,13 @@
 
 #include "edge.h"
 
-Edge::Edge(Vertex *orig, Vertex *dest, unsigned int capacity, Service service) : orig(orig), dest(dest),
-                                                                                 capacity(capacity), service(service) {}
+Edge::Edge(Vertex *orig, Vertex *dest, unsigned int capacity, Service service) {
+    this->orig = orig;
+    this->dest = dest;
+    this->capacity = capacity;
+    this->service = service;
+    initializeCost();
+}
 
 Vertex *Edge::getDest() const {
     return this->dest;
@@ -35,8 +40,8 @@ unsigned int Edge::getFlow() const {
     return flow;
 }
 
-unsigned int Edge::getCost() const {
-    return service == Service::STANDARD ? 2 : 4;
+void Edge::initializeCost() {
+    cost = service == Service::STANDARD ? 2 : 4;
 }
 
 void Edge::setSelected(bool s) {
@@ -70,3 +75,13 @@ Edge *Edge::getCorrespondingEdge() const {
 void Edge::setCorrespondingEdge(Edge *correspondingEdge) {
     Edge::correspondingEdge = correspondingEdge;
 }
+
+void Edge::setCost(unsigned int cost) {
+    Edge::cost = cost;
+}
+
+unsigned int Edge::getCost() const {
+    return cost;
+}
+
+

@@ -164,39 +164,66 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     return false;
 }
 
-bool Graph::bellmanFord(std::string &source, const std::string &target) {
+std::list<Edge *> Graph::bellmanFord(const std::string &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
         v->setCost(UINT32_MAX);
         v->setPath(nullptr);
     }
     findVertex(source)->setCost(0);
 
-    for (int i = 0; i < vertexSet.size() - 1; i++) { //V-1 times
+    for (int i = 1; i <= vertexSet.size(); i++) { //V times
         for (Vertex *v: vertexSet) { //Relax every Edge
             for (Edge *e: v->getIncoming()) {
-                int tempCost = e->getOrig()->getCost() + e->getCost();
-                if (tempCost < v->getCost()) {
-                    v->setCost(tempCost);
-                    v->setPath(e);
+                if (e->getCapacity() > 0) {
+                    int tempCost = e->getOrig()->getCost() + e->getCost();
+                    if (tempCost < v->getCost()) {
+                        if (i == vertexSet.size()) { //Edge being relaxed on Nth iteration - Negative cycle!
+                            Vertex *currentVertex = v;
+                            std::list<Edge *> negativeCycle;
+                            do {
+                                negativeCycle.push_back(currentVertex->getPath());
+                                currentVertex = currentVertex->getPath()->getOrig();
+                            } while (currentVertex != v);
+                            return negativeCycle;
+                        }
+                        v->setCost(tempCost);
+                        v->setPath(e);
+                    }
                 }
             }
         }
     }
-
-    for (Vertex const *v: vertexSet) {
-        for (Edge const *e: v->getAdj()) {
-            if (e->getOrig()->getCost() + e->getCost() < e->getDest()->getCost()) {
-                //Negative Cycle
-                return false;
-            }
-        }
-    }
-    return true;
+    return {};
 }
 
+std::pair<unsigned int, unsigned int>
+Graph::minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph) {
+    std::pair<unsigned int, unsigned int> result;
+    result.first = edmondsKarp({source}, target, residualGraph);
+
+    Graph minCostResidual;
+    makeMinCostResidual(minCostResidual);
+
+    std::list<Edge *> negativeCycle = minCostResidual.bellmanFord(source, target);
+    while (!negativeCycle.empty()) {
+        unsigned int bottleneckCapacity = minCostResidual.findListBottleneck(negativeCycle);
+        minCostResidual.augmentMinCostPath(negativeCycle, bottleneckCapacity);
+        negativeCycle = bellmanFord(source, target);
+    }
+
+    unsigned int cost = 0;
+    for (Vertex *v: vertexSet) {
+        for (Edge *e: v->getAdj()) {
+            cost += e->getCost() * e->getFlow();
+        }
+    }
+    result.second = cost;
+
+    return result;
+}
 
 /**
- * Finds the minimum available flow value in the path connecting source and target vertices
+ * Finds the minimum available capacity value in the path connecting source and target vertices
  * Time Complexity: O(|E|)
  * @param target - Id of the target Vertex
  * @return Bottleneck of the path connecting source to target
@@ -219,6 +246,19 @@ unsigned int Graph::findBottleneck(const std::string &target) const {
 }
 
 
+unsigned int Graph::findListBottleneck(std::list<Edge *> edges) const {
+    unsigned int currBottleneck;
+    unsigned int bottleneck = UINT32_MAX;
+
+    for (Edge *e: edges) {
+        currBottleneck = e->getCapacity();
+        if (currBottleneck < bottleneck)
+            bottleneck = currBottleneck;
+    }
+    return bottleneck;
+}
+
+
 /**
  * Augments the flow in the regularGraph path connecting source to target by value units, and updates the residual network. Indicated for use on residual graphs
  * Time Complexity: O(|E|)
@@ -232,15 +272,57 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value) co
         Edge *residualEdge = currentVertex->getPath();
         Edge *reverseResidualEdge = residualEdge->getReverse();
         Edge *regularEdge = residualEdge->getCorrespondingEdge();
+        Edge *reverseRegularEdge = regularEdge->getReverse();
 
-        //Augment flow in regular graph
-        regularEdge->setFlow(regularEdge->getFlow() + value);
 
-        //Update residual Graph edges
-        residualEdge->setCapacity(regularEdge->getCapacity() - regularEdge->getFlow());
-        reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
+        if (regularEdge->getFlow() + value > regularEdge->getCapacity()) { //Intended value exceeds capacity
 
+            //Augment flow in regular graph
+            unsigned int intendedValue = regularEdge->getFlow() + value;
+            regularEdge->setFlow(regularEdge->getCapacity());
+            reverseRegularEdge->setFlow(reverseRegularEdge->getFlow() - (intendedValue -
+                                                                         regularEdge->getCapacity())); //Reduce reverse edge flow by exceeding amount
+            //Update residual Graph edges
+            residualEdge->setCapacity(0);
+            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + (intendedValue -
+                                                                                   regularEdge->getCapacity()));
+
+        } else { //Intended value is within capacity
+
+            //Augment flow in regular graph
+            regularEdge->setFlow(regularEdge->getFlow() + value);
+
+            //Update residual Graph edges
+            residualEdge->setCapacity(regularEdge->getCapacity() - regularEdge->getFlow());
+            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
+
+        }
         currentVertex = currentVertex->getPath()->getOrig();
+    }
+}
+
+void Graph::augmentMinCostPath(std::list<Edge *> edges, const unsigned int &value) const {
+
+    for (Edge *residualEdge: edges) {
+        Edge *reverseResidualEdge = residualEdge->getReverse(); //For each minCostResidual edge, its reverse is the corresponding negative cost edge, and vice-versa
+        Edge *regularEdge = residualEdge->getCorrespondingEdge();
+        Edge *reverseRegularEdge = regularEdge->getReverse();
+
+        if (residualEdge->getCost() < 0) {
+            //Reduce flow in regular graph
+            regularEdge->setFlow(regularEdge->getFlow() - value);
+
+            //Update residual Graph edges
+            residualEdge->setCapacity(residualEdge->getCapacity() + value);
+            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() - value);
+        } else {
+            //Augment flow in regular graph
+            regularEdge->setFlow(regularEdge->getFlow() + value);
+
+            //Update residual Graph edges
+            residualEdge->setCapacity(residualEdge->getCapacity() - value);
+            reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
+        }
     }
 }
 
@@ -347,56 +429,26 @@ Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
     return nullptr;
 }
 
-/*
-bool Graph::minCostPath(const std::string &source, const std::string &target) {
 
+void Graph::makeMinCostResidual(Graph &minCostResidual) {
     for (Vertex *v: vertexSet) {
-        v->setVisited(false);
-        v->setPath(nullptr);
-        v->setCost(std::numeric_limits<double>::max());
+        minCostResidual.addVertex(v->getId());
     }
+    for (Vertex *v: vertexSet) {
+        for (Edge *e: v->getAdj()) {
+            auto [edge, negativeCostEdge] = minCostResidual.addAndGetBidirectionalEdge(
+                    e->getOrig()->getId(), e->getDest()->getId(), e->getCapacity(), e->getService());
 
-    Vertex* sourceVertex = findVertex(source);
+            negativeCostEdge->setCost(-edge->getCost());
 
-    std::priority_queue<std::pair<double, Vertex *>, std::vector<std::pair<double, Vertex *>>, std::greater<>> pq;
-    sourceVertex->setVisited(true);
-    sourceVertex->setCost(0);
-    pq.push(std::make_pair(0, sourceVertex));
+            edge->setCapacity(e->getCapacity() - e->getFlow());
+            negativeCostEdge->setCapacity(e->getFlow());
 
-    while (!pq.empty()) {
-        Vertex *currentVertex = pq.top().second;
-        pq.pop();
-
-        if (currentVertex == findVertex(target)) {
-            return true;
-        }
-
-        for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && *e->getFlow() < e->getCapacity() && e->isSelected()) {
-                double newCost = currentVertex->getCost() + e->getCost();
-                if (newCost < e->getDest()->getCost()) {
-                    e->getDest()->setVisited(true);
-                    e->getDest()->setCost(newCost);
-                    e->getDest()->setPath(e);
-                    pq.push(std::make_pair(newCost, e->getDest()));
-                }
-            }
-        }
-
-        for (Edge *e: currentVertex->getIncoming()) {
-            if (!e->getOrig()->isVisited() && *e->getFlow() > 0 && e->isSelected()) {
-                double newCost = currentVertex->getCost() - e->getCost();
-                if (newCost < e->getOrig()->getCost()) {
-                    e->getOrig()->setVisited(true);
-                    e->getOrig()->setCost(newCost);
-                    e->getOrig()->setPath(e);
-                    pq.push(std::make_pair(newCost, e->getOrig()));
-                }
-            }
+            edge->setCorrespondingEdge(e);
+            negativeCostEdge->setCorrespondingEdge(e);
         }
     }
 
-    return false;
-}*/
+}
 
 
