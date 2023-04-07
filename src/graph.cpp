@@ -336,7 +336,7 @@ std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const
  * Time Complexity: O(|VE²|)
  * @param vertexID - ID of the station to have it's flow measured
  * @param edges - Edges to be deactivated
- * @return A Pair with the name of the station first, and a pair with the absolute and relative difference second
+ * @return A Pair with the name of the station first, and a pair the original max flow and the reduced max flow
  */
 std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges, Graph &residualGraph){
     std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
