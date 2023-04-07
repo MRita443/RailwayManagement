@@ -16,7 +16,7 @@ Vertex::Vertex(std::string id) : id(std::move(id)) {}
  * @param service - Service of the Edge
  * @return Pointer to the new Edge created
  */
-Edge *Vertex::addEdge(Vertex *d, double w, Service service) {
+Edge *Vertex::addEdge(Vertex *d, unsigned int w, Service service) {
     auto newEdge = new Edge(this, d, w, service);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);

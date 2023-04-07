@@ -15,7 +15,7 @@
 #define INF std::numeric_limits<double>::max()
 
 class Edge;
-enum Service: unsigned int;
+enum class Service: unsigned int;
 
 class Vertex {
 public:
@@ -49,13 +49,11 @@ public:
 
     void setPath(Edge *path);
 
-    Edge *addEdge(Vertex *dest, double w, Service s);
+    Edge *addEdge(Vertex *dest, unsigned int w, Service s);
 
     bool removeEdge(const std::string& destID);
 
-    //friend class MutablePriorityQueue<Vertex>;
-
-protected:
+private:
     std::string id;                // identifier
     std::vector<Edge *> adj;  // outgoing edges
 
@@ -65,10 +63,8 @@ protected:
     unsigned int indegree; // used by topsort
     int cost;
     Edge *path = nullptr;
-
     std::vector<Edge *> incoming; // incoming edges
 
-    //int queueIndex = 0;        // required by MutablePriorityQueue and UFDS
 };
 
 
