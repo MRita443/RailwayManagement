@@ -4,7 +4,6 @@
 
 #include "graph.h"
 
-#include <utility>
 
 Graph::Graph() = default;
 
@@ -324,6 +323,11 @@ bool sort_pair_decreasing_second(const std::pair<std::string,double> &left, cons
     return left.second>right.second;
 }
 
+/**
+ * Creates a ordered list with incoming fluxes of previously grouped stations
+ * @param group - Map that identifies a group of stations
+ * @param residualGraph - Graph object representing the graph's residual network
+ */
 std::list<std::pair<std::string, double>>
 Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
     std::list<std::pair<std::string, double>> result;
@@ -343,13 +347,11 @@ Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &g
  */
 double Graph::getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph) {
     long flux_sum = 0;
-    long num_stations = 0;
     for (Station s: stations){
         std::string sid = s.getName();
         flux_sum += incomingFlux(sid, residualGraph);
-        num_stations++;
     }
-    return ((flux_sum*1.0)/num_stations);
+    return ((flux_sum*1.0)/((long) stations.size()));
 }
 
 
