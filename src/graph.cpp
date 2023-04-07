@@ -280,6 +280,7 @@ unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std
     return maxFlowInterrupted;
 }
 
+
 /**
  *Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
  * Time Complexity: O(|VE²|)
