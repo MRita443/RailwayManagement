@@ -67,6 +67,10 @@ class Graph {
     bool dijkstraPath(const std::list<std::string> &source, const std::string &target) const;
 
     bool dijkstraPath(const std::string &source, const std::string &target) const;
+
+    bool bellmanFord(const std::list<std::string> &source, const std::string &target);
+
+    bool bellmanFord(std::string &source, const std::string &target);
 };
 
 

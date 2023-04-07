@@ -121,7 +121,7 @@ unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std:
         unsigned int bottleneckCapacity = residualGraph.findBottleneck(target);
 
         // Augment the flow by the bottleneck capacity
-        residualGraph.augmentPath(target, bottleneckCapacity, *this);
+        residualGraph.augmentPath(target, bottleneckCapacity);
 
         // Update the maximum flow with the bottleneck capacity
         maxFlow += bottleneckCapacity;
@@ -164,35 +164,34 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     return false;
 }
 
-bool Graph::dijkstraPath(const std::string &source, const std::string &target) const {
-
-    auto increasingCost = [](Vertex *a, Vertex *b) { return a->getCost() < b->getCost(); };
-    std::priority_queue<Vertex *, std::vector<Vertex*>, decltype(increasingCost)> pq(increasingCost);
-
+bool Graph::bellmanFord(std::string &source, const std::string &target) {
     for (Vertex *v: vertexSet) {
-        v->setVisited(false);
+        v->setCost(UINT32_MAX);
         v->setPath(nullptr);
-        v->setCost(INT32_MAX);
-        pq.push(v);
     }
+    findVertex(source)->setCost(0);
 
-    findVertex(source)
-
-    while (!q.empty()) {
-        Vertex const *currentVertex = findVertex(q.front());
-        q.pop();
-        for (Edge *e: currentVertex->getAdj()) {
-            if (!e->getDest()->isVisited() && e->getCapacity() > 0 && e->isSelected()) {
-                q.push(e->getDest()->getId());
-                e->getDest()->setVisited(true);
-                e->getDest()->setPath(e);
-                if (e->getDest()->getId() == target) return true;
+    for (int i = 0; i < vertexSet.size() - 1; i++) { //V-1 times
+        for (Vertex *v: vertexSet) { //Relax every Edge
+            for (Edge *e: v->getIncoming()) {
+                int tempCost = e->getOrig()->getCost() + e->getCost();
+                if (tempCost < v->getCost()) {
+                    v->setCost(tempCost);
+                    v->setPath(e);
+                }
             }
         }
     }
-    return false;
 
-    return false;
+    for (Vertex const *v: vertexSet) {
+        for (Edge const *e: v->getAdj()) {
+            if (e->getOrig()->getCost() + e->getCost() < e->getDest()->getCost()) {
+                //Negative Cycle
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -225,9 +224,8 @@ unsigned int Graph::findBottleneck(const std::string &target) const {
  * Time Complexity: O(|E|)
  * @param target - Id of the target Vertex
  * @param value - Number of units to augment the flow by
- * @param regularGraph - Graph associated with this residual Graph
  */
-void Graph::augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const {
+void Graph::augmentPath(const std::string &target, const unsigned int &value) const {
     Vertex const *currentVertex = findVertex(target);
 
     while (currentVertex->getPath() != nullptr) {
