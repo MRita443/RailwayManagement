@@ -4,6 +4,8 @@
 
 #include "graph.h"
 
+#include <utility>
+
 Graph::Graph() = default;
 
 unsigned int Graph::getNumVertex() const {
@@ -317,6 +319,40 @@ Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
     }
     return nullptr;
 }
+
+bool sort_pair_decreasing_second(const std::pair<std::string,double> &left, const std::pair<std::string,double> &right){
+    return left.second>right.second;
+}
+
+std::list<std::pair<std::string, double>>
+Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
+    std::list<std::pair<std::string, double>> result;
+    for (auto it : group){
+        double average = getAverageIncomingFlux(it.second, residualGraph);
+        result.emplace_back(it.first,average);
+    }
+    result.sort(sort_pair_decreasing_second);
+    return result;
+}
+
+/**
+ * Finds the average incoming flux for every station in a list (normally, representing a township, etc.)
+ * Time Complexity: O(n|VE^2|), n being the size of stations
+ * @param stations - List with the stations' id
+ * @param residualGraph - Graph object representing the graph's residual network
+ */
+double Graph::getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph) {
+    long flux_sum = 0;
+    long num_stations = 0;
+    for (Station s: stations){
+        std::string sid = s.getName();
+        flux_sum += incomingFlux(sid, residualGraph);
+        num_stations++;
+    }
+    return ((flux_sum*1.0)/num_stations);
+}
+
+
 
 /*
 bool Graph::minCostPath(const std::string &source, const std::string &target) {

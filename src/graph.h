@@ -63,6 +63,9 @@ class Graph {
 
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
+
+    std::list<std::pair<std::string, double>> topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
+    double getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph);
 };
 
 

@@ -18,9 +18,9 @@
 
 class Menu {
 private:
-    Graph residualGraph;
-    Graph graph;
     DataRepository dataRepository;
+    Graph residualGraph;
+    Graph graph();
     std::string static const stationsFilePath;
     std::string static const networkFilePath;
     unsigned static const COLUMN_WIDTH;
