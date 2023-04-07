@@ -40,7 +40,7 @@ class Graph {
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
     unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
-    
+
     unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
 
     std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
