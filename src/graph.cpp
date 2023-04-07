@@ -217,8 +217,8 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value, Gr
 }
 
 /**
- * Takes a number and sets the bool "selected" of that amount of edges and the corresponding reverses to false
- * Time Complexity: O(1)
+ * Takes a number and sets the bool "selected" of that amount of edges, their reverse edges and their corresponding edges in the residual graph to false
+ * Time Complexity: O(|E|)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
  */
@@ -231,17 +231,19 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
         stationNum = rand() % vertexSet.size();
         currentVertex = vertexSet[stationNum];
         choice = rand() % currentVertex->getAdj().size();
-        if(currentVertex->getAdj()[choice]->getCorrespondingEdge()->isSelected()){
-           currentVertex->getAdj()[choice]->getCorrespondingEdge()->setSelected(false);
-           currentVertex->getAdj()[choice]->getReverse()->getCorrespondingEdge()->setSelected(false);
-           deactivatedEdges.push_back(currentVertex->getAdj()[choice]->getCorrespondingEdge());
-           }
+        if(currentVertex->getAdj()[choice]->isSelected()){
+            currentVertex->getAdj()[choice]->setSelected(false);
+            currentVertex->getAdj()[choice]->getCorrespondingEdge()->setSelected(false);
+            currentVertex->getAdj()[choice]->getReverse()->setSelected(false);
+            currentVertex->getAdj()[choice]->getReverse()->getCorrespondingEdge()->setSelected(false);
+            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
+            }
     }
     return deactivatedEdges;
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to false
+ * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to false
  * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be deactivated
  * @return A vector of pointers for all edges that were deactivated
@@ -249,20 +251,24 @@ std::vector<Edge*> Graph::deactivateEdges(int numEdges) {
 std::vector<Edge*> Graph::deactivateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(false);
+        edge->getCorrespondingEdge()->setSelected(false);
         edge->getReverse()->setSelected(false);
+        edge->getReverse()->getCorrespondingEdge()->setSelected(false);
     }
     return edges;
 }
 
 /**
- * Takes a vector of edge pointers and sets the selected state of those edges and the corresponding reverses to true
+ * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to true
  * Time Complexity: O(size(edges))
  * @param edges - Vector of edge pointers to be activated
  */
 void Graph::activateEdges(std::vector<Edge *> edges) {
     for(Edge* edge : edges){
         edge->setSelected(true);
+        edge->getCorrespondingEdge()->setSelected(true);
         edge->getReverse()->setSelected(true);
+        edge->getReverse()->getCorrespondingEdge()->setSelected(true);
     }
 }
 
@@ -270,8 +276,9 @@ void Graph::activateEdges(std::vector<Edge *> edges) {
  * Calculates the maximum flow between a source vertex and a target vertex with (numEdges) number of random edges being deactivated and reactivated after calculating the maximum flow
  * Time Complexity: O(|VE²|)
  * @param numEdges - Number of edges to be deactivated and later reactivated
- * @param source - Id of the source Vertex
+ * @param source - List of Ids of source vertexes
  * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
  * @return The value of the Max Flow with the interrupted lines
  */
 unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
@@ -286,8 +293,9 @@ unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std
  *Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
  * Time Complexity: O(|VE²|)
  * @param selectedEdges - Vector of edges to be deactivated and later reactivated
- * @param source - Id of the source Vertex
+ * @param source - List of Ids of source vertexes
  * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
  * @return The value of the Max Flow with the interrupted lines
  */
 unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
