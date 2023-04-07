@@ -27,22 +27,8 @@ unsigned int Graph::getNumEdges() const {
  * @return Pointer to the found Vertex, or nullptr if none was found
  */
 Vertex *Graph::findVertex(const std::string &id) const {
-    for (auto v: vertexSet)
-        if (v->getId() == id)
-            return v;
-    return nullptr;
-}
-
-/**
- * Finds the index of the vertex with a given id
- * Time Complexity: O(|V|)
- * @param id - Id of the vertex to be found
- * @return Index of the found Vertex, or -1 if none was found
- */
-
-unsigned int Graph::findVertexIdx(const std::string &id) const {
     auto it = idToVertex.find(id);
-    if (it == idToVertex.end()) return nullptr;
+    if (it == idToVertex.end()) { return nullptr; }
     return it->second;
 }
 
@@ -141,12 +127,6 @@ unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std:
         // Update the maximum flow with the bottleneck capacity
         maxFlow += bottleneckCapacity;
     }
-
-    for(Edge* edge : findVertex(target)->getIncoming()){
-        unsigned int currentFlow = edge->getFlow();
-        maxFlow += currentFlow;
-    }
-
     return maxFlow;
 }
 
@@ -294,9 +274,9 @@ void Graph::activateEdges(std::vector<Edge *> edges) {
  * @param target - Id of the target Vertex
  * @return The value of the Max Flow with the interrupted lines
  */
-unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(numEdges);
-    unsigned int maxFlowInterrupted = edmondsKarp(source, target);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target, residualGraph);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
 }
@@ -310,9 +290,9 @@ unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std
  * @param target - Id of the target Vertex
  * @return The value of the Max Flow with the interrupted lines
  */
-unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target) {
+unsigned int Graph::maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
     std::vector<Edge*> deactivatedEdges = deactivateEdges(selectedEdges);
-    unsigned int maxFlowInterrupted = edmondsKarp(source, target);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target, residualGraph);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
 }
@@ -350,11 +330,11 @@ std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const
  * @param edges - Edges to be deactivated
  * @return A Pair with the name of the station first, and a pair with the absolute and relative difference second
  */
-std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges){
+std::pair<std::string, std::pair<unsigned int, unsigned int>> Graph::maxFlowDifference(std::string vertexID, std::vector<Edge*> edges, Graph &residualGraph){
     std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
     std::list<std::string> superSource = superSourceCreator(vertexID);
-    unsigned int baseFlow = edmondsKarp(superSource, vertexID);
-    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID);
+    unsigned int baseFlow = edmondsKarp(superSource, vertexID, residualGraph);
+    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID, residualGraph);
     stationResults = {vertexID, {baseFlow, reducedFlow}};
     return stationResults;
 }

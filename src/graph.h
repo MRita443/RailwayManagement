@@ -58,17 +58,17 @@ public:
 
     void activateEdges(std::vector<Edge*> Edges);
 
-    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target);
+    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target);
+    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges);
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges, Graph &residualGraph);
 
     std::list<std::string> superSourceCreator(std::string vertexId);
 
-    unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
+    [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
 
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target);
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
     std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
@@ -77,8 +77,6 @@ public:
     static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
 
     void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
-
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
