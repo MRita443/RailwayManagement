@@ -47,7 +47,7 @@ class Graph {
 
     static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
 
-    void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
+    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
 
@@ -59,16 +59,8 @@ class Graph {
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
-    std::vector<std::pair<Vertex *, Vertex *>> findVerticesWithMaxFlow(Graph &residualGraph);
-
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
-
-    bool dijkstraPath(const std::list<std::string> &source, const std::string &target) const;
-
-    bool dijkstraPath(const std::string &source, const std::string &target) const;
-
-    bool bellmanFord(const std::list<std::string> &source, const std::string &target);
 
     bool bellmanFord(std::string &source, const std::string &target);
 };
