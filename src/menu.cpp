@@ -484,8 +484,8 @@ unsigned int Menu::costOptMenu() {
                                                                                    residualGraph);
 
                     cout << "Maintaining the network active at its maximum, " << result.first
-                         << " trains would travel simultaneously between " << departureName << " and " << arrivalName
-                         << ", totaling an minimum operation cost of " << result.second << "€." << endl;
+                         << " trains can travel simultaneously between " << departureName << " and " << arrivalName
+                         << ", at a minimum cost of " << result.second << "€." << endl;
                     break;
                 }
                 case 'b': {
@@ -552,12 +552,61 @@ unsigned int Menu::failuresMenu() {
                         break;
                     }
 
-                    edgeFailureMenu(); //TODO Do something with this return value
+                    vector<Edge *> deactivatedEdges = edgeFailureMenu();
+                    if(deactivatedEdges.empty()) break;
 
-                    cout /*<< graph.edmondsKarp(departureName, arrivalName) TODO: Deactivated edges edmonds karp*/
-                            << " trains can simultaneously travel between "
-                            << departureName
-                            << " and " << arrivalName << "." << endl;
+                    pair<unsigned int, unsigned int> result =
+                            graph.maxFlowDeactivatedEdges(deactivatedEdges, {departureName}, arrivalName,
+                                                          residualGraph);
+
+                    cout << "The maximum number of trains travelling between "
+                         << departureName
+                         << " and " << arrivalName << " was altered from " << result.first << " to " << result.second
+                         << ", in a " << fixed << setprecision(2) << 100 - ((result.second * 1.0) / result.first) * 100
+                         << "% reduction." << endl;
+                    break;
+                }
+                case '2': {
+                    unsigned int numStations;
+                    cout << "Enter the number of stations you'd like to see: ";
+                    cin >> numStations;
+                    if (!checkInput()) break;
+                    if (numStations > graph.getNumVertex()) {
+                        cout << "The network only has " << graph.getNumVertex()
+                             << " stations!" << endl;
+                        break;
+                    }
+
+                    vector<Edge *> deactivatedEdges = edgeFailureMenu();
+                    if(deactivatedEdges.empty()) break;
+
+                    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>> result = graph.topReductions(
+                            deactivatedEdges, residualGraph);
+
+                    cout << setw(COLUMN_WIDTH) << setfill(' ')
+                         << "List of stations by reduction number of incoming trains capacity" << endl << endl;
+
+
+                    cout << setw(4) << "NUM" << setw(COLUMN_WIDTH / 2 + 10) << left << " | REDUCTION";
+                    cout << setw(COLUMN_WIDTH / 2) << "REGULAR" << setw(COLUMN_WIDTH / 2) << left
+                         << "REDUCED";
+                    cout << "STATION" << endl;
+
+                    for (int i = 0; i < numStations; i++) {
+                        stringstream original;
+                        original << fixed << setprecision(2) << result[i].second.first;
+                        stringstream reduced;
+                        reduced << fixed << setprecision(2) << result[i].second.second;
+                        stringstream reduction;
+                        reduction << fixed << setprecision(2)
+                                  << 100 - ((result[i].second.second * 1.0) / result[i].second.first) * 100;
+
+                        cout << setw(4) << to_string(i + 1) << setw(10)
+                             << " | " + reduction.str() << setw(COLUMN_WIDTH / 2) << left << " %";
+                        cout << setw(COLUMN_WIDTH / 2) << result[i].second.first << setw(COLUMN_WIDTH / 2) << left
+                             << result[i].second.second;
+                        cout << result[i].first << endl;
+                    }
                     break;
                 }
                 case 'b': {
@@ -603,14 +652,16 @@ vector<Edge *> Menu::edgeFailureMenu() {
                 cin >> numEdges;
                 if (!checkInput()) break;
                 if (numEdges > graph.getTotalEdges()) {
-                    cout << "The network doesn't contain that many rails." << endl;
+                    cout << "The network only contains " << graph.getTotalEdges() << " rails!" << endl;
                     break;
                 }
-                cout << "Deactivating the following rails: " << endl;
-                /*for (Edge *e: result.first) {
+                vector<Edge *> result = graph.randomlySelectEdges(numEdges);
+                cout << endl << "Deactivating the following rails: " << endl << endl;
+                for (Edge *e: result) {
                     e->print();
-                }*/
-                return {}; //TODO Fragility edmonds karp
+                }
+                cout << endl;
+                return result;
             }
             case '2': {
                 vector<Edge *> deactivatedEdges;
@@ -643,24 +694,26 @@ vector<Edge *> Menu::edgeFailureMenu() {
                     }
 
                     Vertex *departureVertex = graph.findVertex(departureName);
-                    auto currentEdge = std::find_if(departureVertex->getAdj().begin(),
-                                                    departureVertex->getAdj().end(),
+                    vector<Edge *> adjacentEdges = departureVertex->getAdj();
+                    auto currentEdge = std::find_if(adjacentEdges.begin(),
+                                                    adjacentEdges.end(),
                                                     [arrivalName](Edge *e) {
                                                         return e->getDest()->getId() == arrivalName;
                                                     });
 
-                    if (currentEdge == departureVertex->getAdj().end()) {
+                    if (currentEdge == adjacentEdges.end()) {
                         cout << "The two stations specified are not directly connected!" << endl;
-                        break;
+                        continue;
                     } else deactivatedEdges.push_back(*currentEdge);
                 }
-
-                cout << "Deactivating the following rails: " << endl;
-                for (Edge *e: deactivatedEdges) {
-                    e->print();
+                if (!deactivatedEdges.empty()) {
+                    cout << "Deactivating the following rails: " << endl;
+                    for (Edge *e: deactivatedEdges) {
+                        e->print();
+                    }
                 }
-
-                return {}; //TODO Fragility edmonds karp
+                else cout << "Please provide edges for deactivation!" << endl;
+                return deactivatedEdges;
             }
             default:
                 cout << "Please press one of listed keys." << endl;
