@@ -63,6 +63,7 @@ class Graph {
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
     std::pair<unsigned int, unsigned int>
+    
     minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
 
     std::list<Edge *> bellmanFord(const std::string &source, const std::string &target);
@@ -72,6 +73,11 @@ class Graph {
     void makeMinCostResidual(Graph &minCostResidual);
 
     void augmentMinCostPath(std::list<Edge *> edges, const unsigned int &value) const;
+
+    std::list<std::pair<std::string, double>> topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
+    
+    double getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph);
+
 };
 
 
