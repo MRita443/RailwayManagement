@@ -386,8 +386,7 @@ void Graph::activateEdges(const std::vector<Edge *> &edges) {
 }
 
 /**
- *Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
->>>>>>> 54cc57d78cb166d6b2639db7356c9b0b77bdcb54
+ * Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
  * Time Complexity: O(|VE²|)
  * @param selectedEdges - Vector of edges to be deactivated and later reactivated
  * @param source - List of Ids of source vertexes
