@@ -38,7 +38,7 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    std::vector<Edge*> deactivateEdges(unsigned int numEdges);
+    std::vector<Edge*> deactivateEdgesRandom(unsigned int numEdges);
 
     static std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
 

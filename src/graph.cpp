@@ -352,12 +352,12 @@ void Graph::augmentMinCostPath(const std::list<Edge *> &edges, const unsigned in
 
 
 /**
- * Takes a number and sets the bool "selected" of that amount of edges, their reverse edges and their corresponding edges in the residual graph to false
+ * Sets the bool "selected" of numEdges randomly selected edges, their reverse edges and their corresponding edges in the residual graph to false
  * Time Complexity: O(|E|)
  * @param numEdges - Number of edges to be deactivated
  * @return A vector of pointers for all the edges that were deactivated
  */
-std::vector<Edge *> Graph::deactivateEdges(unsigned int numEdges) {
+std::vector<Edge *> Graph::deactivateEdgesRandom(unsigned int numEdges) {
     unsigned int stationNum;
     Vertex *currentVertex;
     unsigned int choice;
@@ -418,7 +418,7 @@ void Graph::activateEdges(const std::vector<Edge *> &edges) {
  */
 unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source,
                                                   const std::string &target, Graph &residualGraph) {
-    std::vector<Edge *> deactivatedEdges = deactivateEdges(numEdges);
+    std::vector<Edge *> deactivatedEdges = deactivateEdgesRandom(numEdges);
     unsigned int maxFlowInterrupted = edmondsKarp(source, target, residualGraph);
     activateEdges(deactivatedEdges);
     return maxFlowInterrupted;
