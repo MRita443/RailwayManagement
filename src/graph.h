@@ -13,6 +13,7 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
+#include <list>
 
 #include "vertex.h"
 #include "station.h"
@@ -25,7 +26,19 @@ class Graph {
     std::vector<Vertex *> vertexSet;    // vertex set
     std::unordered_map<std::string, Vertex*> idToVertex;
 
-  public:
+    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
+
+    bool path(const std::list<std::string> &source, const std::string &target);
+
+    void visitedDFS(Vertex *source);
+
+    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
+
+    void augmentPath(const std::string &target, const unsigned int &value) const;
+
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
+
+public:
     Graph();
 
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
@@ -39,23 +52,31 @@ class Graph {
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
+    std::vector<Edge*> deactivateEdges(int numEdges);
+
+    std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
+
+    void activateEdges(std::vector<Edge*> Edges);
+
+    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
+
+    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
+
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges, Graph &residualGraph);
+
+    std::list<std::string> superSourceCreator(std::string vertexId);
+
+    [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
+
+    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
     std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
     [[nodiscard]] unsigned int getNumEdges() const;
-
+    
     static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
 
     void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
-
-    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
-
-    unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
-
-    void visitedDFS(Vertex *source);
-
-    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
