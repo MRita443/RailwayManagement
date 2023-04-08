@@ -12,6 +12,7 @@
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #include <unordered_set>
 #include "graph.h"
 #include "dataRepository.h"
