@@ -184,6 +184,7 @@ void Menu::extractStationsFile() {
                     Station newStation = dataRepository.addStationEntry(name, district, municipality, township, line);
                     dataRepository.addStationToMunicipalityEntry(municipality, newStation);
                     dataRepository.addStationToDistrictEntry(district, newStation);
+                    dataRepository.addStationToTownshipEntry(township, newStation);
                 }
             }
         }
@@ -202,7 +203,7 @@ void Menu::extractNetworkFile() {
     string currentParam, currentLine;
     string sourceName, targetName;
     Service service;
-    double capacity;
+    unsigned int capacity;
 
     int counter = 0;
 
@@ -233,7 +234,7 @@ void Menu::extractNetworkFile() {
                     break;
                 }
                 case 2: {
-                    capacity = stod(currentParam);
+                    capacity = stoul(currentParam);
                     break;
                 }
                 case 3: {
@@ -332,20 +333,86 @@ unsigned int Menu::serviceMetricsMenu() {
                         break;
                     }
                     cout
-                            << /*graph.edmondsKarp(graph.get,arrivalName) TODO: Super-source list of vertexes*/" trains can simultaneously arrive at "
+                            << graph.incomingFlux(arrivalName, residualGraph) << " trains can simultaneously arrive at "
                             << arrivalName << "." << endl;
                     break;
                 }
                 case '4': {
-                    //TODO: Top Districts Edmonds-Karp
+                    unsigned int numDistricts;
+                    cout << "Enter the number of districts you'd like to see: ";
+                    cin >> numDistricts;
+                    if (!checkInput()) break;
+                    if (numDistricts > dataRepository.getDistrictToStations().size()) {
+                        cout << "The network only has " << dataRepository.getDistrictToStations().size()
+                             << " districts!" << endl;
+                        break;
+                    }
+                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
+                            dataRepository.getDistrictToStations(), residualGraph);
+
+                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
+                         << "List of districts by average number of incoming trains capacity" << endl;
+
+                    for (int i = 0; i < numDistricts; i++) {
+                        stringstream value;
+                        value << fixed << setprecision(2) << result[i].second;
+
+                        if(result[i].first.empty()) result[i].first = "NO DISTRICT";
+                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                    }
+
                     break;
                 }
                 case '5': {
-                    //TODO: Top Townships Edmonds-Karp
+                    unsigned int numTownships;
+                    cout << "Enter the number of townships you'd like to see: ";
+                    cin >> numTownships;
+                    if (!checkInput()) break;
+                    if (numTownships > dataRepository.getTownshipToStations().size()) {
+                        cout << "The network only has " << dataRepository.getTownshipToStations().size()
+                             << " townships!" << endl;
+                        break;
+                    }
+                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
+                            dataRepository.getTownshipToStations(), residualGraph);
+
+                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
+                         << "List of townships by average number of incoming trains capacity" << endl;
+
+                    for (int i = 0; i < numTownships; i++) {
+                        stringstream value;
+                        value << fixed << setprecision(2) << result[i].second;
+
+                        if(result[i].first.empty()) result[i].first = "NO TOWNSHIP";
+                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                    }
+
                     break;
                 }
                 case '6': {
-                    //TODO: Top Municipalities Edmonds-Karp
+                    unsigned int numMunicipalities;
+                    cout << "Enter the number of municipalities you'd like to see: ";
+                    cin >> numMunicipalities;
+                    if (!checkInput()) break;
+                    if (numMunicipalities > dataRepository.getMunicipalityToStations().size()) {
+                        cout << "The network only has " << dataRepository.getMunicipalityToStations().size()
+                             << " municipalities!" << endl;
+                        break;
+                    }
+                    std::vector<std::pair<std::string, double>> result = graph.topGroupings(
+                            dataRepository.getMunicipalityToStations(), residualGraph);
+
+                    cout << endl << setw(COLUMN_WIDTH) << setfill(' ')
+                         << "List of municipalities by average number of incoming trains capacity" << endl;
+
+                    for (int i = 0; i < numMunicipalities; i++) {
+                        stringstream value;
+                        value << fixed << setprecision(2) << result[i].second;
+
+                        if(result[i].first.empty()) result[i].first = "NO MUNICIPALITY";
+                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                    }
+
                     break;
                 }
                 case 'b': {

@@ -77,7 +77,8 @@ public:
 
     static void augmentMinCostPath(const std::list<Edge *>& edges, const unsigned int &value) ;
 
-    std::list<std::pair<std::string, double>> topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
+    std::vector<std::pair<std::string, double>>
+    topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
     
     double getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph);
 

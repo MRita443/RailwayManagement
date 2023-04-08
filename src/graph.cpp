@@ -152,6 +152,9 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
 
     while (!q.empty()) {
         Vertex const *currentVertex = findVertex(q.front());
+        if (currentVertex->getId() == "Leça do Balio") {
+            int a = 1;
+        }
         q.pop();
         for (Edge *e: currentVertex->getAdj()) {
             if (!e->getDest()->isVisited() && e->getCapacity() > 0 && e->isSelected()) {
@@ -557,7 +560,7 @@ unsigned int Graph::incomingFlux(const std::string &station, Graph &residualGrap
             break;
         }
 
-    return edmondsKarp(findEndOfLines(station), station, residualGraph);
+    return edmondsKarp(super_source, station, residualGraph);
 }
 
 
@@ -567,18 +570,22 @@ sort_pair_decreasing_second(const std::pair<std::string, double> &left, const st
 }
 
 /**
- * Creates a ordered list with incoming fluxes of previously grouped stations
+ * Creates an ordered vector with incoming fluxes of previously grouped stations
  * @param group - Map that identifies a group of stations
  * @param residualGraph - Graph object representing the graph's residual network
+ * @return An ordered vector of pairs with decreasing average flow (second element), identified by its grouping name (first element)
  */
-std::list<std::pair<std::string, double>>
+std::vector<std::pair<std::string, double>>
 Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
-    std::list<std::pair<std::string, double>> result;
+    std::vector<std::pair<std::string, double>> result;
     for (const auto &it: group) {
+        if (it.first == "Matosinhos e Leça da Palmeira") {
+            int a = 1;
+        }
         double average = getAverageIncomingFlux(it.second, residualGraph);
         result.emplace_back(it.first, average);
     }
-    result.sort(sort_pair_decreasing_second);
+    std::sort(result.begin(), result.end(), sort_pair_decreasing_second);
     return result;
 }
 
