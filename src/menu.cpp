@@ -531,7 +531,7 @@ vector<Edge *> Menu::edgeFailureMenu() {
                 cout << "Please enter how many rails you'd like to deactivate: ";
                 cin >> numEdges;
                 if (!checkInput()) break;
-                if (numEdges > graph.getNumEdges()) {
+                if (numEdges > graph.getTotalEdges()) {
                     cout << "The network doesn't contain that many rails." << endl;
                     break;
                 }

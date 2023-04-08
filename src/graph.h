@@ -20,23 +20,9 @@
 
 class Graph {
   private:
-    Graph(Graph &g);
-
-    unsigned int numEdges;
+    unsigned int totalEdges = 0;
     std::vector<Vertex *> vertexSet;    // vertex set
     std::unordered_map<std::string, Vertex*> idToVertex;
-
-    [[nodiscard]] unsigned int findVertexIdx(const std::string &id) const;
-
-    bool path(const std::list<std::string> &source, const std::string &target);
-
-    void visitedDFS(Vertex *source);
-
-    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
-
-    void augmentPath(const std::string &target, const unsigned int &value) const;
-
-    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
 
 public:
     Graph();
@@ -52,19 +38,17 @@ public:
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    std::vector<Edge*> deactivateEdges(int numEdges);
+    std::vector<Edge*> deactivateEdgesRandom(unsigned int numEdges);
 
-    std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
+    static std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
 
-    void activateEdges(std::vector<Edge*> Edges);
+    static void activateEdges(const std::vector<Edge*>& Edges);
 
     unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    unsigned int maxFlowDeactivatedEdgesSelected(std::vector<Edge*> selectedEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(const std::string& vertexID, const std::vector<Edge*>& edges, Graph &residualGraph);
 
-    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(std::string vertexID, std::vector<Edge*> edges, Graph &residualGraph);
-
-    std::list<std::string> superSourceCreator(std::string vertexId);
+    std::list<std::string> superSourceCreator(const std::string& vertexId);
 
     [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
 
@@ -72,21 +56,42 @@ public:
 
     std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
-    [[nodiscard]] unsigned int getNumEdges() const;
+    [[nodiscard]] unsigned int getTotalEdges() const;
     
     static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
 
-    void augmentPath(const std::string &target, const unsigned int &value, Graph &regularGraph) const;
+    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
-
-    std::vector<std::pair<Vertex *, Vertex *>> findVerticesWithMaxFlow(Graph &residualGraph);
 
     std::pair<Edge *, Edge *>
     addAndGetBidirectionalEdge(const std::string &source, const std::string &dest, unsigned int c, Service service);
 
+    std::pair<unsigned int, unsigned int>
+    
+    minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
+
+    static unsigned int findListBottleneck(const std::list<Edge *>& edges) ;
+
+    void makeMinCostResidual(Graph &minCostResidual);
+
+    static void augmentMinCostPath(const std::list<Edge *>& edges, const unsigned int &value) ;
+
     std::list<std::pair<std::string, double>> topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
+    
     double getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph);
+
+    std::list<Edge *> bellmanFord(const std::string &source);
+
+    void visitedDFS(Vertex *source);
+
+    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
+
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
+
+    unsigned int
+    maxFlowDeactivatedEdgesSelected(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
+                                    const std::string &target, Graph &residualGraph);
 };
 
 

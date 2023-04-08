@@ -33,6 +33,8 @@ class Edge {
 
     [[nodiscard]] unsigned int getFlow() const;
 
+    [[nodiscard]] int getCost() const;
+
     Edge *getCorrespondingEdge() const;
 
     void setSelected(bool s);
@@ -47,7 +49,11 @@ class Edge {
 
     void setCorrespondingEdge(Edge *correspondingEdge);
 
+    void setCost(int cost);
+
     void print() const;
+
+    void initializeCost();
 
   private:
     Vertex *orig;
@@ -63,6 +69,8 @@ class Edge {
     Edge *correspondingEdge = nullptr;
 
     unsigned int flow = 0; // for flow-related problems
+    int cost;
+
 };
 
 #endif //RAILWAYMANAGEMENT_EDGE_H
