@@ -13,19 +13,18 @@
 #include <tuple>
 #include <list>
 #include <algorithm>
+#include <list>
 
 #include "vertex.h"
 #include "station.h"
 
 class Graph {
   private:
-    Graph(Graph &g);
-
-    unsigned int numEdges;
+    unsigned int totalEdges = 0;
     std::vector<Vertex *> vertexSet;    // vertex set
     std::unordered_map<std::string, Vertex*> idToVertex;
 
-  public:
+public:
     Graph();
 
     [[nodiscard]] Vertex *findVertex(const std::string &id) const;
@@ -39,23 +38,29 @@ class Graph {
 
     [[nodiscard]] std::vector<Vertex *> getVertexSet() const;
 
-    unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
+    std::vector<Edge*> deactivateEdges(unsigned int numEdges);
 
-    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
+    static std::vector<Edge*> deactivateEdges(std::vector<Edge*> Edges);
 
-    [[nodiscard]] unsigned int getNumEdges() const;
+    static void activateEdges(const std::vector<Edge*>& Edges);
 
-    static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
+    unsigned int maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    void augmentPath(const std::string &target, const unsigned int &value) const;
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> maxFlowDifference(const std::string& vertexID, const std::vector<Edge*>& edges, Graph &residualGraph);
 
-    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
+    std::list<std::string> superSourceCreator(const std::string& vertexId);
+
+    [[nodiscard]] unsigned int incomingFlux(const std::string &station, Graph &residualGraph);
 
     unsigned int edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph);
 
-    void visitedDFS(Vertex *source);
+    std::pair<std::list<std::pair<std::string, std::string>>, unsigned int> calculateNetworkMaxFlow(Graph &residualGraph);
 
-    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string &stationId) const;
+    [[nodiscard]] unsigned int getTotalEdges() const;
+    
+    static Edge *getCorrespondingEdge(const Edge *e, const Graph &graph);
+
+    void augmentPath(const std::string &target, const unsigned int &value) const;
 
     bool path(const std::list<std::string> &source, const std::string &target) const;
 
@@ -66,18 +71,27 @@ class Graph {
     
     minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph);
 
-    std::list<Edge *> bellmanFord(const std::string &source, const std::string &target);
-
-    unsigned int findListBottleneck(std::list<Edge *> edges) const;
+    static unsigned int findListBottleneck(const std::list<Edge *>& edges) ;
 
     void makeMinCostResidual(Graph &minCostResidual);
 
-    void augmentMinCostPath(std::list<Edge *> edges, const unsigned int &value) const;
+    static void augmentMinCostPath(const std::list<Edge *>& edges, const unsigned int &value) ;
 
     std::list<std::pair<std::string, double>> topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph);
     
     double getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph);
 
+    std::list<Edge *> bellmanFord(const std::string &source);
+
+    void visitedDFS(Vertex *source);
+
+    [[nodiscard]] unsigned int findBottleneck(const std::string &target) const;
+
+    [[nodiscard]] std::list<std::string> findEndOfLines(const std::string& stationId) const;
+
+    unsigned int
+    maxFlowDeactivatedEdgesSelected(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
+                                    const std::string &target, Graph &residualGraph);
 };
 
 

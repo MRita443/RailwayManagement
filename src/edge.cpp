@@ -76,11 +76,11 @@ void Edge::setCorrespondingEdge(Edge *correspondingEdge) {
     Edge::correspondingEdge = correspondingEdge;
 }
 
-void Edge::setCost(unsigned int cost) {
+void Edge::setCost(int cost) {
     Edge::cost = cost;
 }
 
-unsigned int Edge::getCost() const {
+int Edge::getCost() const {
     return cost;
 }
 

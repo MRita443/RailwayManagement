@@ -33,7 +33,7 @@ class Edge {
 
     [[nodiscard]] unsigned int getFlow() const;
 
-    [[nodiscard]] unsigned int getCost() const;
+    [[nodiscard]] int getCost() const;
 
     Edge *getCorrespondingEdge() const;
 
@@ -49,7 +49,7 @@ class Edge {
 
     void setCorrespondingEdge(Edge *correspondingEdge);
 
-    void setCost(unsigned int cost);
+    void setCost(int cost);
 
     void print() const;
 
@@ -69,7 +69,7 @@ class Edge {
     Edge *correspondingEdge = nullptr;
 
     unsigned int flow = 0; // for flow-related problems
-    unsigned int cost;
+    int cost;
 
 };
 

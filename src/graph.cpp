@@ -15,8 +15,9 @@ std::vector<Vertex *> Graph::getVertexSet() const {
     return vertexSet;
 }
 
-unsigned int Graph::getNumEdges() const {
-    return numEdges;
+
+unsigned int Graph::getTotalEdges() const {
+    return totalEdges;
 }
 
 /**
@@ -27,7 +28,7 @@ unsigned int Graph::getNumEdges() const {
  */
 Vertex *Graph::findVertex(const std::string &id) const {
     auto it = idToVertex.find(id);
-    if (it == idToVertex.end()) return nullptr;
+    if (it == idToVertex.end()) { return nullptr; }
     return it->second;
 }
 
@@ -66,7 +67,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
     e1->setReverse(e2);
     e2->setReverse(e1);
 
-    numEdges++;
+    totalEdges++;
     return true;
 }
 
@@ -91,7 +92,7 @@ Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &
     e1->setReverse(e2);
     e2->setReverse(e1);
 
-    numEdges++;
+    totalEdges++;
     return {e1, e2};
 }
 
@@ -103,9 +104,8 @@ Graph::addAndGetBidirectionalEdge(const std::string &source, const std::string &
  * @param residualGraph - Graph object representing this Graph's residual network
  * @return unsigned int representing computed value of max flow
  */
+
 unsigned int Graph::edmondsKarp(const std::list<std::string> &source, const std::string &target, Graph &residualGraph) {
-
-
     for (Vertex const *v: vertexSet) {
         for (Edge *e: v->getAdj()) {
             e->setFlow(0);
@@ -165,7 +165,7 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     return false;
 }
 
-std::list<Edge *> Graph::bellmanFord(const std::string &source, const std::string &target) {
+std::list<Edge *> Graph::bellmanFord(const std::string &source) {
     for (Vertex *v: vertexSet) {
         v->setCost(UINT32_MAX);
         v->setPath(nullptr);
@@ -205,11 +205,11 @@ Graph::minCostMaxFlow(const std::string &source, const std::string &target, Grap
     Graph minCostResidual;
     makeMinCostResidual(minCostResidual);
 
-    std::list<Edge *> negativeCycle = minCostResidual.bellmanFord(source, target);
+    std::list<Edge *> negativeCycle = minCostResidual.bellmanFord(source);
     while (!negativeCycle.empty()) {
-        unsigned int bottleneckCapacity = minCostResidual.findListBottleneck(negativeCycle);
-        minCostResidual.augmentMinCostPath(negativeCycle, bottleneckCapacity);
-        negativeCycle = minCostResidual.bellmanFord(source, target);
+        unsigned int bottleneckCapacity = findListBottleneck(negativeCycle);
+        augmentMinCostPath(negativeCycle, bottleneckCapacity);
+        negativeCycle = minCostResidual.bellmanFord(source);
     }
 
     unsigned int cost = 0;
@@ -239,15 +239,15 @@ unsigned int Graph::findBottleneck(const std::string &target) const {
         currBottleneck = currentVertex->getPath()->getCapacity();
         currentVertex = currentVertex->getPath()->getOrig();
 
-        if (currBottleneck < bottleneck)
+        if (currBottleneck < bottleneck) {
             bottleneck = currBottleneck;
-
+        }
     }
     return bottleneck;
 }
 
 
-unsigned int Graph::findListBottleneck(std::list<Edge *> edges) const {
+unsigned int Graph::findListBottleneck(const std::list<Edge *> &edges) {
     unsigned int currBottleneck;
     unsigned int bottleneck = UINT32_MAX;
 
@@ -302,12 +302,12 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value) co
     }
 }
 
-void Graph::augmentMinCostPath(std::list<Edge *> edges, const unsigned int &value) const {
+
+void Graph::augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value) {
 
     for (Edge *residualEdge: edges) {
         Edge *reverseResidualEdge = residualEdge->getReverse(); //For each minCostResidual edge, its reverse is the corresponding negative cost edge, and vice-versa
         Edge *regularEdge = residualEdge->getCorrespondingEdge();
-        Edge *reverseRegularEdge = regularEdge->getReverse();
 
         if (residualEdge->getCost() < 0) {
             //Reduce flow in regular graph
@@ -325,6 +325,99 @@ void Graph::augmentMinCostPath(std::list<Edge *> edges, const unsigned int &valu
             reverseResidualEdge->setCapacity(reverseResidualEdge->getCapacity() + value);
         }
     }
+}
+
+
+/**
+ * Takes a number and sets the bool "selected" of that amount of edges, their reverse edges and their corresponding edges in the residual graph to false
+ * Time Complexity: O(|E|)
+ * @param numEdges - Number of edges to be deactivated
+ * @return A vector of pointers for all the edges that were deactivated
+ */
+std::vector<Edge *> Graph::deactivateEdges(unsigned int numEdges) {
+    unsigned int stationNum;
+    Vertex *currentVertex;
+    unsigned int choice;
+    std::vector<Edge *> deactivatedEdges = {};
+    while (deactivatedEdges.size() < numEdges) {
+        stationNum = rand() % vertexSet.size();
+        currentVertex = vertexSet[stationNum];
+        choice = rand() % currentVertex->getAdj().size();
+        if (currentVertex->getAdj()[choice]->isSelected()) {
+            currentVertex->getAdj()[choice]->setSelected(false);
+            currentVertex->getAdj()[choice]->getCorrespondingEdge()->setSelected(false);
+            currentVertex->getAdj()[choice]->getReverse()->setSelected(false);
+            currentVertex->getAdj()[choice]->getReverse()->getCorrespondingEdge()->setSelected(false);
+            deactivatedEdges.push_back(currentVertex->getAdj()[choice]);
+        }
+    }
+    return deactivatedEdges;
+}
+
+/**
+ * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to false
+ * Time Complexity: O(size(edges))
+ * @param edges - Vector of edge pointers to be deactivated
+ * @return A vector of pointers for all edges that were deactivated
+ */
+std::vector<Edge *> Graph::deactivateEdges(std::vector<Edge *> edges) {
+    for (Edge *edge: edges) {
+        edge->setSelected(false);
+        edge->getCorrespondingEdge()->setSelected(false);
+        edge->getReverse()->setSelected(false);
+        edge->getReverse()->getCorrespondingEdge()->setSelected(false);
+    }
+    return edges;
+}
+
+/**
+ * Takes a vector of edge pointers and sets the selected state of those edges, their reverses and their corresponding edges in the residual graph to true
+ * Time Complexity: O(size(edges))
+ * @param edges - Vector of edge pointers to be activated
+ */
+void Graph::activateEdges(const std::vector<Edge *> &edges) {
+    for (Edge *edge: edges) {
+        edge->setSelected(true);
+        edge->getCorrespondingEdge()->setSelected(true);
+        edge->getReverse()->setSelected(true);
+        edge->getReverse()->getCorrespondingEdge()->setSelected(true);
+    }
+}
+
+/**
+ * Calculates the maximum flow between a source vertex and a target vertex with (totalEdges) number of random edges being deactivated and reactivated after calculating the maximum flow
+ * Time Complexity: O(|VE²|)
+ * @param numEdges - Number of edges to be deactivated and later reactivated
+ * @param source - List of Ids of source vertexes
+ * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
+ * @return The value of the Max Flow with the interrupted lines
+ */
+unsigned int Graph::maxFlowDeactivatedEdgesRandom(const int &numEdges, const std::list<std::string> &source,
+                                                  const std::string &target, Graph &residualGraph) {
+    std::vector<Edge *> deactivatedEdges = deactivateEdges(numEdges);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target, residualGraph);
+    activateEdges(deactivatedEdges);
+    return maxFlowInterrupted;
+}
+
+
+/**
+ *Calculates the maximum flow between a source vertex and a target vertex with the edges inputted to the function being deactivated and reactivated after calculating the maximum flow
+ * Time Complexity: O(|VE²|)
+ * @param selectedEdges - Vector of edges to be deactivated and later reactivated
+ * @param source - List of Ids of source vertexes
+ * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
+ * @return The value of the Max Flow with the interrupted lines
+ */
+unsigned int
+Graph::maxFlowDeactivatedEdgesSelected(const std::vector<Edge *> &selectedEdges, const std::list<std::string> &source,
+                                       const std::string &target, Graph &residualGraph) {
+    std::vector<Edge *> deactivatedEdges = deactivateEdges(selectedEdges);
+    unsigned int maxFlowInterrupted = edmondsKarp(source, target, residualGraph);
+    activateEdges(deactivatedEdges);
+    return maxFlowInterrupted;
 }
 
 
@@ -351,11 +444,41 @@ std::list<std::string> Graph::findEndOfLines(const std::string &stationId) const
             }
         }
     }
-
     return eol_stations;
 }
 
 /**
+ * Calculates the max flow of a station normally, and once again with certain edges deactivated, and returns a pair with the name of the station and the difference between normal flow and reduced flow
+ * Time Complexity: O(|VE²|)
+ * @param vertexID - ID of the station to have it's flow measured
+ * @param edges - Edges to be deactivated
+ * @return A Pair with the name of the station first, and a pair the original max flow and the reduced max flow
+ */
+std::pair<std::string, std::pair<unsigned int, unsigned int>>
+Graph::maxFlowDifference(const std::string &vertexID, const std::vector<Edge *> &edges, Graph &residualGraph) {
+    std::pair<std::string, std::pair<unsigned int, unsigned int>> stationResults;
+    std::list<std::string> superSource = superSourceCreator(vertexID);
+    unsigned int baseFlow = edmondsKarp(superSource, vertexID, residualGraph);
+    unsigned int reducedFlow = maxFlowDeactivatedEdgesSelected(edges, superSource, vertexID, residualGraph);
+    stationResults = {vertexID, {baseFlow, reducedFlow}};
+    return stationResults;
+}
+
+/**
+ * Creates a list with every vertex except the one selected in the function
+ * Time Complexity: O(V)
+ * @param vertexId - Vertex to be excluded from the list
+ * @return A list with every vertex except the selected one
+ */
+std::list<std::string> Graph::superSourceCreator(const std::string &vertexId) {
+    std::list<std::string> superSource = {};
+    for (Vertex *vertex: vertexSet) {
+        if (vertexId != vertex->getId()) { superSource.push_back(vertex->getId()); }
+    }
+    return superSource;
+}
+
+/*
  * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
@@ -431,8 +554,9 @@ Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
 }
 
 
-bool sort_pair_decreasing_second(const std::pair<std::string,double> &left, const std::pair<std::string,double> &right){
-    return left.second>right.second;
+bool
+sort_pair_decreasing_second(const std::pair<std::string, double> &left, const std::pair<std::string, double> &right) {
+    return left.second > right.second;
 }
 
 /**
@@ -443,9 +567,9 @@ bool sort_pair_decreasing_second(const std::pair<std::string,double> &left, cons
 std::list<std::pair<std::string, double>>
 Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
     std::list<std::pair<std::string, double>> result;
-    for (auto it : group){
+    for (const auto &it: group) {
         double average = getAverageIncomingFlux(it.second, residualGraph);
-        result.emplace_back(it.first,average);
+        result.emplace_back(it.first, average);
     }
     result.sort(sort_pair_decreasing_second);
     return result;
@@ -457,13 +581,13 @@ Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &g
  * @param stations - List with the stations' id
  * @param residualGraph - Graph object representing the graph's residual network
  */
-double Graph::getAverageIncomingFlux(const std::list<Station>& stations, Graph &residualGraph) {
-    long flux_sum = 0;
-    for (Station s: stations){
-        std::string sid = s.getName();
+double Graph::getAverageIncomingFlux(const std::list<Station> &stations, Graph &residualGraph) {
+    double flux_sum = 0;
+    for (const Station &s: stations) {
+        const std::string &sid = s.getName();
         flux_sum += incomingFlux(sid, residualGraph);
     }
-    return ((flux_sum*1.0)/((long) stations.size()));
+    return flux_sum / (double) stations.size();
 }
 
 void Graph::makeMinCostResidual(Graph &minCostResidual) {
@@ -484,7 +608,4 @@ void Graph::makeMinCostResidual(Graph &minCostResidual) {
             negativeCostEdge->setCorrespondingEdge(e);
         }
     }
-
 }
-
-
