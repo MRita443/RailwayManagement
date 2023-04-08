@@ -208,7 +208,7 @@ Graph::minCostMaxFlow(const std::string &source, const std::string &target, Grap
     while (!negativeCycle.empty()) {
         unsigned int bottleneckCapacity = minCostResidual.findListBottleneck(negativeCycle);
         minCostResidual.augmentMinCostPath(negativeCycle, bottleneckCapacity);
-        negativeCycle = bellmanFord(source, target);
+        negativeCycle = minCostResidual.bellmanFord(source, target);
     }
 
     unsigned int cost = 0;
