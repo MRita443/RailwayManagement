@@ -187,14 +187,24 @@ std::list<Edge *> Graph::bellmanFord(const std::string &source) {
                 if (e->getCapacity() > 0) {
                     int tempCost = e->getOrig()->getCost() + e->getCost();
                     if (tempCost < v->getCost()) {
+
+                        if (e->getDest()->getId() == "Figueira da Foz") {
+                            int a = 1;
+                        }
+
                         if (i == vertexSet.size()) { //Edge being relaxed on Nth iteration - Negative cycle!
                             Vertex *currentVertex = v;
                             std::list<Edge *> negativeCycle;
-                            do {
-                                negativeCycle.push_back(currentVertex->getPath());
+
+                            //Get beginning of cycle
+                            for (int i = 0; i < vertexSet.size(); i++) {
                                 currentVertex = currentVertex->getPath()->getOrig();
-                            } while (currentVertex != v);
-                            return negativeCycle;
+                            }
+
+                            for (Vertex *temp = currentVertex;; temp = temp->getPath()->getOrig()) {
+                                negativeCycle.push_back(currentVertex->getPath());
+                                if (temp == currentVertex && negativeCycle.size() > 1) return negativeCycle;
+                            }
                         }
                         v->setCost(tempCost);
                         v->setPath(e);
@@ -579,9 +589,6 @@ std::vector<std::pair<std::string, double>>
 Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &group, Graph &residualGraph) {
     std::vector<std::pair<std::string, double>> result;
     for (const auto &it: group) {
-        if (it.first == "Matosinhos e Leça da Palmeira") {
-            int a = 1;
-        }
         double average = getAverageIncomingFlux(it.second, residualGraph);
         result.emplace_back(it.first, average);
     }

@@ -357,8 +357,9 @@ unsigned int Menu::serviceMetricsMenu() {
                         stringstream value;
                         value << fixed << setprecision(2) << result[i].second;
 
-                        if(result[i].first.empty()) result[i].first = "NO DISTRICT";
-                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                        if (result[i].first.empty()) result[i].first = "NO DISTRICT";
+                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
+                             << " | " + value.str() + " trains" << result[i].first << endl;
                     }
 
                     break;
@@ -383,8 +384,9 @@ unsigned int Menu::serviceMetricsMenu() {
                         stringstream value;
                         value << fixed << setprecision(2) << result[i].second;
 
-                        if(result[i].first.empty()) result[i].first = "NO TOWNSHIP";
-                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                        if (result[i].first.empty()) result[i].first = "NO TOWNSHIP";
+                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
+                             << " | " + value.str() + " trains" << result[i].first << endl;
                     }
 
                     break;
@@ -409,8 +411,9 @@ unsigned int Menu::serviceMetricsMenu() {
                         stringstream value;
                         value << fixed << setprecision(2) << result[i].second;
 
-                        if(result[i].first.empty()) result[i].first = "NO MUNICIPALITY";
-                        cout << setw(4) << to_string(i + 1) <<  setw(COLUMN_WIDTH/2) << left << " | " + value.str() + " trains" << result[i].first << endl;
+                        if (result[i].first.empty()) result[i].first = "NO MUNICIPALITY";
+                        cout << setw(4) << to_string(i + 1) << setw(COLUMN_WIDTH / 2) << left
+                             << " | " + value.str() + " trains" << result[i].first << endl;
                     }
 
                     break;
@@ -477,11 +480,12 @@ unsigned int Menu::costOptMenu() {
                         stationDoesntExist();
                         break;
                     }
-                    cout
-                            << "Prioritizing minimum cost, we suggest a maximum of"/*<< graph.edmondsKarp(departureName, arrivalName) TODO: Max Flow Min cost*/
-                            << " trains traveling simultaneously between "
-                            << departureName
-                            << " and " << arrivalName << ", totaling an operation cost of " << "€." << endl;
+                    pair<unsigned int, unsigned int> result = graph.minCostMaxFlow(departureName, arrivalName,
+                                                                                   residualGraph);
+
+                    cout << "Maintaining the network active at its maximum, " << result.first
+                         << " trains would travel simultaneously between " << departureName << " and " << arrivalName
+                         << ", totaling an minimum operation cost of " << result.second << "€." << endl;
                     break;
                 }
                 case 'b': {
