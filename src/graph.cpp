@@ -34,7 +34,7 @@ Vertex *Graph::findVertex(const std::string &id) const {
 
 /**
  * Adds a vertex with a given id to the Graph, representing a given station
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param id - Id of the Vertex to add
  * @return True if successful, and false if a vertex with the given id already exists
  */
@@ -49,7 +49,7 @@ bool Graph::addVertex(const std::string &id) {
 
 /**
  * Adds a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param c - Capacity of the Edge to be added
@@ -73,7 +73,7 @@ bool Graph::addBidirectionalEdge(const std::string &source, const std::string &d
 
 /**
  * Adds and returns a bidirectional edge to the Graph between the vertices with id source and dest, with a capacity of c, representing a Service s
- * Time Complexity: O(|V|)
+ * Time Complexity: O(1) (average case) | O(|V|) (worst case)
  * @param source - Id of the source Vertex
  * @param dest - Id of the destination Vertex
  * @param c - Capacity of the Edge to be added
@@ -165,6 +165,12 @@ bool Graph::path(const std::list<std::string> &source, const std::string &target
     return false;
 }
 
+/**
+ * Bellman-Ford algorithm variation that returns a list of edges belonging to a negative cycle that was found
+ * Time Complexity: O(|VE|)
+ * @param source - Id of source Vertex, to which distances will be relative to
+ * @return List of pointers to Edges that belong to a negative cycle, or an empty list if no negative cycle was found
+ */
 std::list<Edge *> Graph::bellmanFord(const std::string &source) {
     for (Vertex *v: vertexSet) {
         v->setCost(UINT32_MAX);
@@ -197,6 +203,13 @@ std::list<Edge *> Graph::bellmanFord(const std::string &source) {
     return {};
 }
 
+/**
+ * Cycle-cancelling algorithm for finding the minimum cost for the maximum flow of this Graph's network
+ * @param source - Id of the source Vertex
+ * @param target - Id of the target Vertex
+ * @param residualGraph - Graph object representing this Graph's residual network
+ * @return A pair of unsigned ints representing the value of the max flow and its min cost
+ */
 std::pair<unsigned int, unsigned int>
 Graph::minCostMaxFlow(const std::string &source, const std::string &target, Graph &residualGraph) {
     std::pair<unsigned int, unsigned int> result;
@@ -227,7 +240,7 @@ Graph::minCostMaxFlow(const std::string &source, const std::string &target, Grap
  * Finds the minimum available capacity value in the path connecting source and target vertices
  * Time Complexity: O(|E|)
  * @param target - Id of the target Vertex
- * @return Bottleneck of the path connecting source to target
+ * @return Bottleneck (minimum) capacity of the path connecting source to target
  */
 unsigned int Graph::findBottleneck(const std::string &target) const {
     Vertex const *currentVertex = findVertex(target);
@@ -246,7 +259,12 @@ unsigned int Graph::findBottleneck(const std::string &target) const {
     return bottleneck;
 }
 
-
+/**
+ * Finds the minimum available capacity value of the edges passed as parameter
+ * Time Complexity: O(|E|)
+ * @param edges - List of pointers to the Edges to evaluate
+ * @return Bottleneck (minimum) capacity of the list of Edges
+ */
 unsigned int Graph::findListBottleneck(const std::list<Edge *> &edges) {
     unsigned int currBottleneck;
     unsigned int bottleneck = UINT32_MAX;
@@ -261,10 +279,10 @@ unsigned int Graph::findListBottleneck(const std::list<Edge *> &edges) {
 
 
 /**
- * Augments the flow in the regularGraph path connecting source to target by value units, and updates the residual network. Indicated for use on residual graphs
+ * Augments or reduces the flow in the regular Graph path connecting source to target by value units, and updates the residual network. Indicated for use on residual graphs
  * Time Complexity: O(|E|)
  * @param target - Id of the target Vertex
- * @param value - Number of units to augment the flow by
+ * @param value - Number of units to alter the flow by
  */
 void Graph::augmentPath(const std::string &target, const unsigned int &value) const {
     Vertex const *currentVertex = findVertex(target);
@@ -302,7 +320,12 @@ void Graph::augmentPath(const std::string &target, const unsigned int &value) co
     }
 }
 
-
+/**
+ * Augments or reduces the flow in the regular graph edges by value units, and updates the residual network. Indicated for use on residual graphs auxiliary to the min cost max flow algorithm
+ * Time Complexity: O(|E|)
+ * @param edges - List of pointers to the Edges whose flow will be altered
+ * @param value - Number of units to alter the flow by
+ */
 void Graph::augmentMinCostPath(const std::list<Edge *> &edges, const unsigned int &value) {
 
     for (Edge *residualEdge: edges) {
@@ -478,7 +501,7 @@ std::list<std::string> Graph::superSourceCreator(const std::string &vertexId) {
     return superSource;
 }
 
-/*
+/**
  * DFS traversal variation that sets the visited attribute to true of the nodes the DFS traverses to
  * Time Complexity: O(|V|+|E|)
  * @param source - Vertex where the DFS starts
@@ -537,22 +560,6 @@ unsigned int Graph::incomingFlux(const std::string &station, Graph &residualGrap
     return edmondsKarp(findEndOfLines(station), station, residualGraph);
 }
 
-/**
- * Gets the corresponding Edge to e in the passed graph, i.e. the Edge with the same origin and destiny
- * Time Complexity: O(|Vg| + |Eg|), where Vg is the number of vertices and Eg is the number of edges in the parameter graph
- * @param e - Pointer to the Edge whose correspondent is to be found
- * @param graph - Graph in which the corresponding Edge should be found
- * @return Pointer to the found Edge, or nullptr if no such Ede was found in the parameter graph
- */
-Edge *Graph::getCorrespondingEdge(const Edge *e, const Graph &graph) {
-    auto adjList = graph.findVertex(e->getOrig()->getId())->getAdj();
-    for (Edge *r: adjList) {
-        if (r->getDest()->getId() == e->getDest()->getId())
-            return r;
-    }
-    return nullptr;
-}
-
 
 bool
 sort_pair_decreasing_second(const std::pair<std::string, double> &left, const std::pair<std::string, double> &right) {
@@ -577,7 +584,7 @@ Graph::topGroupings(const std::unordered_map<std::string, std::list<Station>> &g
 
 /**
  * Finds the average incoming flux for every station in a list (normally, representing a township, etc.)
- * Time Complexity: O(n|VE^2|), n being the size of stations
+ * Time Complexity: O(n|VE²|), n being the size of stations
  * @param stations - List with the stations' id
  * @param residualGraph - Graph object representing the graph's residual network
  */
@@ -590,6 +597,11 @@ double Graph::getAverageIncomingFlux(const std::list<Station> &stations, Graph &
     return flux_sum / (double) stations.size();
 }
 
+/**
+ * Based on this Graph, builds an auxiliary min cost max flow residual graph in minCostResidual, with edges representing removing flow having negative cost
+ * Time Complexity: O(|V|+|E|)
+ * @param minCostResidual - Graph object in which to construct the residual network
+ */
 void Graph::makeMinCostResidual(Graph &minCostResidual) {
     for (Vertex *v: vertexSet) {
         minCostResidual.addVertex(v->getId());
