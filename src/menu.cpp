@@ -553,17 +553,16 @@ unsigned int Menu::failuresMenu() {
                     }
 
                     vector<Edge *> deactivatedEdges = edgeFailureMenu();
-                    if(deactivatedEdges.empty()) break;
+                    if (deactivatedEdges.empty()) break;
 
                     pair<unsigned int, unsigned int> result =
                             graph.maxFlowDeactivatedEdges(deactivatedEdges, {departureName}, arrivalName,
                                                           residualGraph);
-
+                    double reductionValue = result.first == 0 ? 0 : 100 - ((result.second * 1.0) / result.first) * 100;
                     cout << "The maximum number of trains travelling between "
                          << departureName
                          << " and " << arrivalName << " was altered from " << result.first << " to " << result.second
-                         << ", in a " << fixed << setprecision(2) << 100 - ((result.second * 1.0) / result.first) * 100
-                         << "% reduction." << endl;
+                         << ", in a " << fixed << setprecision(2) << reductionValue << "% reduction." << endl;
                     break;
                 }
                 case '2': {
@@ -578,7 +577,7 @@ unsigned int Menu::failuresMenu() {
                     }
 
                     vector<Edge *> deactivatedEdges = edgeFailureMenu();
-                    if(deactivatedEdges.empty()) break;
+                    if (deactivatedEdges.empty()) break;
 
                     std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int>>> result = graph.topReductions(
                             deactivatedEdges, residualGraph);
@@ -598,8 +597,11 @@ unsigned int Menu::failuresMenu() {
                         stringstream reduced;
                         reduced << fixed << setprecision(2) << result[i].second.second;
                         stringstream reduction;
+                        double reductionValue = result[i].second.first == 0 ? 0 : 100 -
+                                                                                  ((result[i].second.second * 1.0) /
+                                                                                   result[i].second.first) * 100;
                         reduction << fixed << setprecision(2)
-                                  << 100 - ((result[i].second.second * 1.0) / result[i].second.first) * 100;
+                                  << reductionValue;
 
                         cout << setw(4) << to_string(i + 1) << setw(10)
                              << " | " + reduction.str() << setw(COLUMN_WIDTH / 2) << left << " %";
@@ -655,13 +657,15 @@ vector<Edge *> Menu::edgeFailureMenu() {
                     cout << "The network only contains " << graph.getTotalEdges() << " rails!" << endl;
                     break;
                 }
-                vector<Edge *> result = graph.randomlySelectEdges(numEdges);
-                cout << endl << "Deactivating the following rails: " << endl << endl;
-                for (Edge *e: result) {
-                    e->print();
-                }
-                cout << endl;
-                return result;
+                vector<Edge *> deactivatedEdges = graph.randomlySelectEdges(numEdges);
+
+                if (!deactivatedEdges.empty()) {
+                    cout << "Deactivating the following rails: " << endl;
+                    for (Edge *e: deactivatedEdges) {
+                        e->print();
+                    }
+                } else cout << "Please provide edges for deactivation!" << endl;
+                return deactivatedEdges;
             }
             case '2': {
                 vector<Edge *> deactivatedEdges;
@@ -711,8 +715,7 @@ vector<Edge *> Menu::edgeFailureMenu() {
                     for (Edge *e: deactivatedEdges) {
                         e->print();
                     }
-                }
-                else cout << "Please provide edges for deactivation!" << endl;
+                } else cout << "Please provide edges for deactivation!" << endl;
                 return deactivatedEdges;
             }
             default:

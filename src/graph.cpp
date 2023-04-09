@@ -452,9 +452,10 @@ Graph::topReductions(const std::vector<Edge *> &edges, Graph &residualGraph) {
         result.push_back({v->getId(), {baseFlow, reducedFlow}});
     }
 
-    std::sort(result.begin(), result.end(), [](const std::pair<std::string, std::pair<unsigned int, unsigned int>>& p1,
-                                               const std::pair<std::string, std::pair<unsigned int, unsigned int>>& p2) {
-        return (100 - ((p1.second.second * 1.0) / p1.second.first) * 100) > (100 - ((p2.second.second * 1.0) / p2.second.first) * 100);
+    std::sort(result.begin(), result.end(), [](const std::pair<std::string, std::pair<unsigned int, unsigned int>> &p1,
+                                               const std::pair<std::string, std::pair<unsigned int, unsigned int>> &p2) {
+        return (p1.second.first == 0 ? 0 : (100 - ((p1.second.second * 1.0) / p1.second.first) * 100)) >
+               (p2.second.first == 0 ? 0 : (100 - ((p2.second.second * 1.0) / p2.second.first) * 100));
     });
 
     return result;
