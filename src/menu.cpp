@@ -16,7 +16,6 @@ Menu::Menu() = default;
 
 /**
  * Delegates initialization of the menu, calling the appropriate functions for information extraction and output
- * TODO: Time Complexity
  */
 void Menu::initializeMenu() {
     extractFileInfo();
