@@ -323,11 +323,11 @@ unsigned int Menu::serviceMetricsMenu() {
                 }
                 case '3': {
                     string arrivalName;
-                    cout << "Enter the name of the departure station: ";
+                    cout << "Enter the name of the arrival station: ";
                     getline(cin, arrivalName);
                     if (!checkInput()) break;
-                    optional<Station> departureStation = dataRepository.findStation(arrivalName);
-                    if (!departureStation.has_value()) {
+                    optional<Station> arrivalStation = dataRepository.findStation(arrivalName);
+                    if (!arrivalStation.has_value()) {
                         stationDoesntExist();
                         break;
                     }
