@@ -42,6 +42,7 @@ unsigned int Edge::getFlow() const {
 
 void Edge::initializeCost() {
     cost = service == Service::STANDARD ? 2 : 4;
+    if (service == Service::VERY_EXPENSIVE) cost = 6;
 }
 
 void Edge::setSelected(bool s) {

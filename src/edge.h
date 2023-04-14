@@ -12,7 +12,8 @@ class Vertex;
 
 enum class Service : unsigned int {
     STANDARD = 0,
-    ALFA_PENDULAR = 1
+    ALFA_PENDULAR = 1,
+    VERY_EXPENSIVE = 2
 };
 
 class Edge {

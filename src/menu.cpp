@@ -22,6 +22,250 @@ void Menu::initializeMenu() {
     mainMenu();
 }
 
+void Menu::edmondsKarpExample() {
+    for (std::string s: {"s", "2", "3", "4", "5", "t"}) {
+        graph.addVertex(s);
+        residualGraph.addVertex(s);
+        dataRepository.addStationEntry(s, "", "", "", "");
+    }
+    auto [regular, regularReverse] = graph.addAndGetBidirectionalEdge("s", "2", 3, Service::STANDARD);
+    auto [residual, residualReverse] = residualGraph.addAndGetBidirectionalEdge("s", "2", 3, Service::STANDARD);
+
+    regular->setCorrespondingEdge(residual);
+    regularReverse->setCorrespondingEdge(residualReverse);
+    residual->setCorrespondingEdge(regular);
+    residualReverse->setCorrespondingEdge(regularReverse);
+
+    auto [regular1, regularReverse1] = graph.addAndGetBidirectionalEdge("s", "3", 3, Service::STANDARD);
+    auto [residual1, residualReverse1] = residualGraph.addAndGetBidirectionalEdge("s", "3", 3, Service::STANDARD);
+
+    regular1->setCorrespondingEdge(residual1);
+    regularReverse1->setCorrespondingEdge(residualReverse1);
+    residual1->setCorrespondingEdge(regular1);
+    residualReverse1->setCorrespondingEdge(regularReverse1);
+
+    auto [regular2, regularReverse2] = graph.addAndGetBidirectionalEdge("s", "4", 2, Service::STANDARD);
+    auto [residual2, residualReverse2] = residualGraph.addAndGetBidirectionalEdge("s", "4", 2, Service::STANDARD);
+
+    regular2->setCorrespondingEdge(residual2);
+    regularReverse2->setCorrespondingEdge(residualReverse2);
+    residual2->setCorrespondingEdge(regular2);
+    residualReverse2->setCorrespondingEdge(regularReverse2);
+
+    auto [regular3, regularReverse3] = graph.addAndGetBidirectionalEdge("2", "5", 4, Service::STANDARD);
+    auto [residual3, residualReverse3] = residualGraph.addAndGetBidirectionalEdge("2", "5", 4, Service::STANDARD);
+
+    regular3->setCorrespondingEdge(residual3);
+    regularReverse3->setCorrespondingEdge(residualReverse3);
+    residual3->setCorrespondingEdge(regular3);
+    residualReverse3->setCorrespondingEdge(regularReverse3);
+
+    auto [regular4, regularReverse4] = graph.addAndGetBidirectionalEdge("4", "5", 1, Service::STANDARD);
+    auto [residual4, residualReverse4] = residualGraph.addAndGetBidirectionalEdge("4", "5", 1, Service::STANDARD);
+
+    regular4->setCorrespondingEdge(residual4);
+    regularReverse4->setCorrespondingEdge(residualReverse4);
+    residual4->setCorrespondingEdge(regular4);
+    residualReverse4->setCorrespondingEdge(regularReverse4);
+
+    auto [regular5, regularReverse5] = graph.addAndGetBidirectionalEdge("4", "t", 2, Service::STANDARD);
+    auto [residual5, residualReverse5] = residualGraph.addAndGetBidirectionalEdge("4", "t", 2, Service::STANDARD);
+
+    regular5->setCorrespondingEdge(residual5);
+    regularReverse5->setCorrespondingEdge(residualReverse5);
+    residual5->setCorrespondingEdge(regular5);
+    residualReverse5->setCorrespondingEdge(regularReverse5);
+
+    auto [regular6, regularReverse6] = graph.addAndGetBidirectionalEdge("4", "3", 1, Service::STANDARD);
+    auto [residual6, residualReverse6] = residualGraph.addAndGetBidirectionalEdge("4", "3", 1, Service::STANDARD);
+
+    regular6->setCorrespondingEdge(residual6);
+    regularReverse6->setCorrespondingEdge(residualReverse6);
+    residual6->setCorrespondingEdge(regular6);
+    residualReverse6->setCorrespondingEdge(regularReverse6);
+
+    auto [regular7, regularReverse7] = graph.addAndGetBidirectionalEdge("3", "t", 2, Service::STANDARD);
+    auto [residual7, residualReverse7] = residualGraph.addAndGetBidirectionalEdge("3", "t", 2, Service::STANDARD);
+
+    regular7->setCorrespondingEdge(residual7);
+    regularReverse7->setCorrespondingEdge(residualReverse7);
+    residual7->setCorrespondingEdge(regular7);
+    residualReverse7->setCorrespondingEdge(regularReverse7);
+
+    auto [regular8, regularReverse8] = graph.addAndGetBidirectionalEdge("5", "t", 1, Service::STANDARD);
+    auto [residual8, residualReverse8] = residualGraph.addAndGetBidirectionalEdge("5", "t", 1, Service::STANDARD);
+
+    regular8->setCorrespondingEdge(residual8);
+    regularReverse8->setCorrespondingEdge(residualReverse8);
+    residual8->setCorrespondingEdge(regular8);
+    residualReverse8->setCorrespondingEdge(regularReverse8);
+
+    auto [regular9, regularReverse9] = graph.addAndGetBidirectionalEdge("2", "4", 1, Service::STANDARD);
+    auto [residual9, residualReverse9] = residualGraph.addAndGetBidirectionalEdge("2", "4", 1, Service::STANDARD);
+
+    regular9->setCorrespondingEdge(residual9);
+    regularReverse9->setCorrespondingEdge(residualReverse9);
+    residual9->setCorrespondingEdge(regular9);
+    residualReverse9->setCorrespondingEdge(regularReverse9);
+
+    mainMenu();
+}
+
+void Menu::minCostExample() {
+    for (std::string s: {"s", "2", "3", "4", "5", "t"}) {
+        graph.addVertex(s);
+        residualGraph.addVertex(s);
+        dataRepository.addStationEntry(s, "", "", "", "");
+    }
+    auto [regular, regularReverse] = graph.addAndGetBidirectionalEdge("s", "2", 3, Service::STANDARD);
+    auto [residual, residualReverse] = residualGraph.addAndGetBidirectionalEdge("s", "2", 3, Service::STANDARD);
+
+    regular->setCorrespondingEdge(residual);
+    regularReverse->setCorrespondingEdge(residualReverse);
+    residual->setCorrespondingEdge(regular);
+    residualReverse->setCorrespondingEdge(regularReverse);
+
+    auto [regular1, regularReverse1] = graph.addAndGetBidirectionalEdge("s", "3", 3, Service::STANDARD);
+    auto [residual1, residualReverse1] = residualGraph.addAndGetBidirectionalEdge("s", "3", 3, Service::STANDARD);
+
+    regular1->setCorrespondingEdge(residual1);
+    regularReverse1->setCorrespondingEdge(residualReverse1);
+    residual1->setCorrespondingEdge(regular1);
+    residualReverse1->setCorrespondingEdge(regularReverse1);
+
+    auto [regular2, regularReverse2] = graph.addAndGetBidirectionalEdge("s", "4", 2, Service::STANDARD);
+    auto [residual2, residualReverse2] = residualGraph.addAndGetBidirectionalEdge("s", "4", 2, Service::STANDARD);
+
+    regular2->setCorrespondingEdge(residual2);
+    regularReverse2->setCorrespondingEdge(residualReverse2);
+    residual2->setCorrespondingEdge(regular2);
+    residualReverse2->setCorrespondingEdge(regularReverse2);
+
+    auto [regular3, regularReverse3] = graph.addAndGetBidirectionalEdge("2", "5", 4, Service::STANDARD);
+    auto [residual3, residualReverse3] = residualGraph.addAndGetBidirectionalEdge("2", "5", 4, Service::STANDARD);
+
+    regular3->setCorrespondingEdge(residual3);
+    regularReverse3->setCorrespondingEdge(residualReverse3);
+    residual3->setCorrespondingEdge(regular3);
+    residualReverse3->setCorrespondingEdge(regularReverse3);
+
+    auto [regular4, regularReverse4] = graph.addAndGetBidirectionalEdge("4", "5", 1, Service::VERY_EXPENSIVE);
+    auto [residual4, residualReverse4] = residualGraph.addAndGetBidirectionalEdge("4", "5", 1, Service::VERY_EXPENSIVE);
+
+    regular4->setCorrespondingEdge(residual4);
+    regularReverse4->setCorrespondingEdge(residualReverse4);
+    residual4->setCorrespondingEdge(regular4);
+    residualReverse4->setCorrespondingEdge(regularReverse4);
+
+    auto [regular5, regularReverse5] = graph.addAndGetBidirectionalEdge("4", "t", 2, Service::STANDARD);
+    auto [residual5, residualReverse5] = residualGraph.addAndGetBidirectionalEdge("4", "t", 2, Service::STANDARD);
+
+    regular5->setCorrespondingEdge(residual5);
+    regularReverse5->setCorrespondingEdge(residualReverse5);
+    residual5->setCorrespondingEdge(regular5);
+    residualReverse5->setCorrespondingEdge(regularReverse5);
+
+    auto [regular6, regularReverse6] = graph.addAndGetBidirectionalEdge("4", "3", 1, Service::STANDARD);
+    auto [residual6, residualReverse6] = residualGraph.addAndGetBidirectionalEdge("4", "3", 1, Service::STANDARD);
+
+    regular6->setCorrespondingEdge(residual6);
+    regularReverse6->setCorrespondingEdge(residualReverse6);
+    residual6->setCorrespondingEdge(regular6);
+    residualReverse6->setCorrespondingEdge(regularReverse6);
+
+    auto [regular7, regularReverse7] = graph.addAndGetBidirectionalEdge("3", "t", 2, Service::STANDARD);
+    auto [residual7, residualReverse7] = residualGraph.addAndGetBidirectionalEdge("3", "t", 2, Service::STANDARD);
+
+    regular7->setCorrespondingEdge(residual7);
+    regularReverse7->setCorrespondingEdge(residualReverse7);
+    residual7->setCorrespondingEdge(regular7);
+    residualReverse7->setCorrespondingEdge(regularReverse7);
+
+    auto [regular8, regularReverse8] = graph.addAndGetBidirectionalEdge("5", "t", 1, Service::STANDARD);
+    auto [residual8, residualReverse8] = residualGraph.addAndGetBidirectionalEdge("5", "t", 1, Service::STANDARD);
+
+    regular8->setCorrespondingEdge(residual8);
+    regularReverse8->setCorrespondingEdge(residualReverse8);
+    residual8->setCorrespondingEdge(regular8);
+    residualReverse8->setCorrespondingEdge(regularReverse8);
+
+    auto [regular9, regularReverse9] = graph.addAndGetBidirectionalEdge("2", "4", 1, Service::VERY_EXPENSIVE);
+    auto [residual9, residualReverse9] = residualGraph.addAndGetBidirectionalEdge("2", "4", 1, Service::VERY_EXPENSIVE);
+
+    regular9->setCorrespondingEdge(residual9);
+    regularReverse9->setCorrespondingEdge(residualReverse9);
+    residual9->setCorrespondingEdge(regular9);
+    residualReverse9->setCorrespondingEdge(regularReverse9);
+
+    mainMenu();
+}
+
+void Menu::incomingFlowExample() {
+    for (std::string s: {"a", "b", "c", "d", "e", "f", "g"}) {
+        graph.addVertex(s);
+        residualGraph.addVertex(s);
+        dataRepository.addStationEntry(s, "", "", "", "");
+    }
+    auto [regular, regularReverse] = graph.addAndGetBidirectionalEdge("a", "c", 8, Service::VERY_EXPENSIVE);
+    auto [residual, residualReverse] = residualGraph.addAndGetBidirectionalEdge("a", "c", 8, Service::VERY_EXPENSIVE);
+
+    regular->setCorrespondingEdge(residual);
+    regularReverse->setCorrespondingEdge(residualReverse);
+    residual->setCorrespondingEdge(regular);
+    residualReverse->setCorrespondingEdge(regularReverse);
+
+    auto [regular1, regularReverse1] = graph.addAndGetBidirectionalEdge("b", "c", 2, Service::STANDARD);
+    auto [residual1, residualReverse1] = residualGraph.addAndGetBidirectionalEdge("b", "c", 2, Service::STANDARD);
+
+    regular1->setCorrespondingEdge(residual1);
+    regularReverse1->setCorrespondingEdge(residualReverse1);
+    residual1->setCorrespondingEdge(regular1);
+    residualReverse1->setCorrespondingEdge(regularReverse1);
+
+    auto [regular2, regularReverse2] = graph.addAndGetBidirectionalEdge("c", "d", 12, Service::STANDARD);
+    auto [residual2, residualReverse2] = residualGraph.addAndGetBidirectionalEdge("c", "d", 12, Service::STANDARD);
+
+    regular2->setCorrespondingEdge(residual2);
+    regularReverse2->setCorrespondingEdge(residualReverse2);
+    residual2->setCorrespondingEdge(regular2);
+    residualReverse2->setCorrespondingEdge(regularReverse2);
+
+    auto [regular3, regularReverse3] = graph.addAndGetBidirectionalEdge("d", "e", 12, Service::VERY_EXPENSIVE);
+    auto [residual3, residualReverse3] = residualGraph.addAndGetBidirectionalEdge("d", "e", 12, Service::VERY_EXPENSIVE);
+
+    regular3->setCorrespondingEdge(residual3);
+    regularReverse3->setCorrespondingEdge(residualReverse3);
+    residual3->setCorrespondingEdge(regular3);
+    residualReverse3->setCorrespondingEdge(regularReverse3);
+
+    auto [regular4, regularReverse4] = graph.addAndGetBidirectionalEdge("d", "g", 6, Service::STANDARD);
+    auto [residual4, residualReverse4] = residualGraph.addAndGetBidirectionalEdge("d", "g", 6, Service::STANDARD);
+
+    regular4->setCorrespondingEdge(residual4);
+    regularReverse4->setCorrespondingEdge(residualReverse4);
+    residual4->setCorrespondingEdge(regular4);
+    residualReverse4->setCorrespondingEdge(regularReverse4);
+
+    auto [regular5, regularReverse5] = graph.addAndGetBidirectionalEdge("e", "g", 12, Service::VERY_EXPENSIVE);
+    auto [residual5, residualReverse5] = residualGraph.addAndGetBidirectionalEdge("e", "g", 12, Service::VERY_EXPENSIVE);
+
+    regular5->setCorrespondingEdge(residual5);
+    regularReverse5->setCorrespondingEdge(residualReverse5);
+    residual5->setCorrespondingEdge(regular5);
+    residualReverse5->setCorrespondingEdge(regularReverse5);
+
+    auto [regular6, regularReverse6] = graph.addAndGetBidirectionalEdge("g", "f", 8, Service::STANDARD);
+    auto [residual6, residualReverse6] = residualGraph.addAndGetBidirectionalEdge("g", "f", 8, Service::STANDARD);
+
+    regular6->setCorrespondingEdge(residual6);
+    regularReverse6->setCorrespondingEdge(residualReverse6);
+    residual6->setCorrespondingEdge(regular6);
+    residualReverse6->setCorrespondingEdge(regularReverse6);
+
+    mainMenu();
+}
+
+
 /**
  * Delegates extracting file info, calling the appropriate functions for each file
  * Time Complexity: O(n*v), where n is the number of lines of network.csv and v is the number of lines in stations.csv

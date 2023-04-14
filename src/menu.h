@@ -52,6 +52,11 @@ public:
 
     static void stationDoesntExist();
 
+    void edmondsKarpExample();
+
+    void minCostExample();
+
+    void incomingFlowExample();
 };
 
 

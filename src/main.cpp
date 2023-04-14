@@ -2,6 +2,6 @@
 
 int main() {
     Menu menu;
-    menu.initializeMenu();
+    menu.minCostExample();
     return 0;
 }
